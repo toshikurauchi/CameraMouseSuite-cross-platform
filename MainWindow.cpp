@@ -28,7 +28,8 @@ namespace CMS {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    camera(0)
 {
     ui->setupUi(this);
     setWindowTitle(tr("CameraMouseSuite"));
@@ -48,7 +49,7 @@ void MainWindow::setupCameraWidgets()
     // Create device selection menu
     QActionGroup *cameraGroup = new QActionGroup(this);
     cameraGroup->setExclusive(true);
-    for (const QCameraInfo &cameraInfo: QCameraInfo::availableCameras()) {
+    foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
         QAction *cameraAction = new QAction(cameraInfo.description(), cameraGroup);
         cameraAction->setCheckable(true);
         cameraAction->setData(QVariant::fromValue(cameraInfo));
@@ -75,7 +76,8 @@ void MainWindow::displayCameraError()
 
 void MainWindow::setCamera(const QCameraInfo &cameraInfo)
 {
-    delete camera;
+    if (camera)
+        delete camera;
 
     camera = new QCamera(cameraInfo);
 

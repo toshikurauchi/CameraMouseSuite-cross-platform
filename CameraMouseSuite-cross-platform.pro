@@ -23,14 +23,21 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CameraMouseSuite
 TEMPLATE = app
 
-QT_CONFIG -= no-pkg-config
-CONFIG += c++11 link_pkgconfig
+unix {
+    QT_CONFIG -= no-pkg-config
+    CONFIG += c++11 link_pkgconfig
 
-mac {
-  PKG_CONFIG = /usr/local/bin/pkg-config
+    mac {
+      PKG_CONFIG = /usr/local/bin/pkg-config
+    }
+
+    PKGCONFIG += opencv
 }
 
-PKGCONFIG += opencv
+win32 {
+    INCLUDEPATH += $$(OPENCV_INCLUDE)
+    LIBS += $$(OPENCV_DIR)/lib/*.lib
+}
 
 SOURCES += *.cpp
 
@@ -38,3 +45,6 @@ HEADERS  += *.h \
     asmOpenCV.h
 
 FORMS    += mainWindow.ui
+
+OTHER_FILES += \
+    README.md
