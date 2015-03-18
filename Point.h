@@ -15,39 +15,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_VIDEOMANAGERSURFACE_H
-#define CMS_VIDEOMANAGERSURFACE_H
+#ifndef CMS_POINT_H
+#define CMS_POINT_H
 
-#include <QList>
-#include <QLabel>
-#include <QVideoFrame>
-#include <QAbstractVideoSurface>
 #include <opencv/cv.h>
-
-#include "StandardTrackingModule.h"
 
 namespace CMS {
 
-class VideoManagerSurface : public QAbstractVideoSurface
+class Point
 {
-    Q_OBJECT
-
 public:
-    VideoManagerSurface(QLabel *imageLabel, QObject *parent = 0);
-    QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
-    bool present(const QVideoFrame &frame);
-
-protected slots:
-    void mousePressEvent(QMouseEvent *event);
+    Point();
+    Point(double x, double y);
+    Point(cv::Point2f &cvPoint);
+    bool empty();
+    double X();
+    double Y();
+    cv::Point2f asCVPoint();
 
 private:
-    QLabel *m_imageLabel;
-    QList<QVideoFrame::PixelFormat> supportedFormats;
-    QSize frameSize;
-    StandardTrackingModule trackingModule;
-    cv::Mat prevMat;
+    bool isEmpty;
+    double x, y;
 };
 
 } // namespace CMS
 
-#endif // CMS_VIDEOMANAGERSURFACE_H
+#endif // CMS_POINT_H

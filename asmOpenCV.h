@@ -12,6 +12,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QDebug>
+#include <stdexcept>
 
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/imgproc/types_c.h"
@@ -75,8 +76,8 @@ namespace ASM {
    //    NOTE: Format_RGB888 is an exception since we need to use a local QImage and thus must clone the data regardless
    inline cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData = true )
    {
-      switch ( inImage.format() )
-      {
+       switch ( inImage.format() )
+       {
          // 8-bit, 4 channel
          case QImage::Format_RGB32:
          {
@@ -118,6 +119,29 @@ namespace ASM {
    inline cv::Mat QPixmapToCvMat( const QPixmap &inPixmap, bool inCloneImageData = true )
    {
       return QImageToCvMat( inPixmap.toImage(), inCloneImageData );
+   }
+
+   // Convert cv::Mat to gray
+   inline cv::Mat convertToGray(cv::Mat &colorMat)
+   {
+       cv::Mat gray;
+       if (colorMat.type() == CV_8UC4)
+       {
+           cv::cvtColor(colorMat, gray, cv::COLOR_BGRA2GRAY);
+       }
+       else if (colorMat.type() == CV_8UC3)
+       {
+           cv::cvtColor(colorMat, gray, cv::COLOR_BGR2GRAY);
+       }
+       else if (colorMat.type() == CV_8UC1)
+       {
+           gray = colorMat;
+       }
+       else
+       {
+           throw std::invalid_argument("cv::Mat type not supported");
+       }
+       return gray;
    }
 }
 

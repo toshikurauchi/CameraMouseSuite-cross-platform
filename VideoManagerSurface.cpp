@@ -18,10 +18,10 @@
 // This code is partially based on http://stackoverflow.com/questions/26229633/use-of-qabstractvideosurface
 
 #include <QMouseEvent>
-#include <opencv/cv.h>
 
 #include "VideoManagerSurface.h"
 #include "asmOpenCV.h"
+#include "Point.h"
 
 namespace CMS {
 
@@ -70,12 +70,24 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
                 frameToProcess.height(),
                 frameToProcess.bytesPerLine(),
                 QVideoFrame::imageFormatFromPixelFormat(frameToProcess.pixelFormat()));
-        image = image.mirrored(true, false); // Mirror horizontally to simulate a mirror
+        // The kind of mirroring needed depends on the OS
+        #ifdef Q_OS_LINUX
+            image = image.mirrored(true, false);
+        #elif defined Q_OS_WIN
+            image = image.mirrored(true, true);
+        #elif defined Q_OS_MAC
+            image = image.mirrored(true, false);
+        #endif
         if (frameSize.isEmpty())
             frameSize = image.size();
         cv::Mat mat = ASM::QImageToCvMat(image, false);
-        if (!prevPos.isNull())
-            cv::circle(mat, cv::Point(prevPos.x(), prevPos.y()), 100, cv::Scalar(255, 0, 0));
+        prevMat = mat;
+        if (trackingModule.initialized())
+        {
+            Point p = trackingModule.track(mat);
+            if (!p.empty())
+                cv::circle(mat, p.asCVPoint(), 10, cv::Scalar(255, 255, 0));
+        }
 
         image = image.scaled(m_imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
@@ -97,7 +109,8 @@ void VideoManagerSurface::mousePressEvent(QMouseEvent *event)
         return;
     int x = frameSize.width() * event->x() / m_imageLabel->size().width();
     int y = frameSize.height() * event->y() / m_imageLabel->size().height();
-    prevPos = QPoint(x, y);
+    if (!prevMat.empty())
+        trackingModule.setTrackPoint(prevMat, Point(x, y));
 }
 
 } // namespace CMS

@@ -39,10 +39,14 @@ win32 {
     LIBS += $$(OPENCV_DIR)/lib/*.lib
 }
 
-SOURCES += *.cpp
+SOURCES += *.cpp \
+    StandardTrackingModule.cpp \
+    Point.cpp
 
 HEADERS  += *.h \
-    asmOpenCV.h
+    asmOpenCV.h \
+    StandardTrackingModule.h \
+    Point.h
 
 FORMS    += mainWindow.ui
 

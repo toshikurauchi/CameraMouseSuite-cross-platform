@@ -15,39 +15,35 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_VIDEOMANAGERSURFACE_H
-#define CMS_VIDEOMANAGERSURFACE_H
+#ifndef CMS_STANDARDTRACKINGMODULE_H
+#define CMS_STANDARDTRACKINGMODULE_H
 
-#include <QList>
-#include <QLabel>
-#include <QVideoFrame>
-#include <QAbstractVideoSurface>
 #include <opencv/cv.h>
+#include <vector>
 
-#include "StandardTrackingModule.h"
+#include "Point.h"
 
 namespace CMS {
 
-class VideoManagerSurface : public QAbstractVideoSurface
+class StandardTrackingModule
 {
-    Q_OBJECT
-
 public:
-    VideoManagerSurface(QLabel *imageLabel, QObject *parent = 0);
-    QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
-    bool present(const QVideoFrame &frame);
-
-protected slots:
-    void mousePressEvent(QMouseEvent *event);
+    StandardTrackingModule();
+    Point track(cv::Mat &frame);
+    void setTrackPoint(cv::Mat frame, Point point);
+    bool initialized();
 
 private:
-    QLabel *m_imageLabel;
-    QList<QVideoFrame::PixelFormat> supportedFormats;
-    QSize frameSize;
-    StandardTrackingModule trackingModule;
-    cv::Mat prevMat;
+    bool isInitialized;
+    cv::Size winSize;
+    cv::TermCriteria criteria;
+    cv::Mat prevGrey;
+    std::vector<cv::Point2f> prevTrackPoints;
+    cv::Size imageSize;
+
+    void limitTPDelta(cv::Point2f &cur, cv::Point2f &last);
 };
 
 } // namespace CMS
 
-#endif // CMS_VIDEOMANAGERSURFACE_H
+#endif // CMS_STANDARDTRACKINGMODULE_H
