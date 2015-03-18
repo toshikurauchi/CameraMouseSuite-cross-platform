@@ -34,7 +34,7 @@ StandardTrackingModule::StandardTrackingModule() :
 Point StandardTrackingModule::track(cv::Mat &frame)
 {
     if (!isInitialized)
-        throw std::exception("No point set to be tracked");
+        throw std::logic_error("No point set to be tracked");
 
     if (frame.empty())
         throw std::invalid_argument("Frame is empty!");
