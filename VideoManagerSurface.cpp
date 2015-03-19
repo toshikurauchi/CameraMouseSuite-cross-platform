@@ -28,9 +28,8 @@ namespace CMS {
 VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) : QAbstractVideoSurface(parent)
 {
     m_imageLabel = imageLabel;
-    supportedFormats = QList<QVideoFrame::PixelFormat>() << QVideoFrame::Format_RGB32;
-                                                         //<< QVideoFrame::Format_RGB555
-                                                         //<< QVideoFrame::Format_RGB565;
+    supportedFormats = QList<QVideoFrame::PixelFormat>() << QVideoFrame::Format_RGB24
+                                                         << QVideoFrame::Format_RGB32;
     connect(imageLabel, SIGNAL(mousePressed(QMouseEvent*)), this, SLOT(mousePressEvent(QMouseEvent*)));
 }
 
@@ -80,7 +79,7 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
         #endif
         if (frameSize.isEmpty())
             frameSize = image.size();
-        cv::Mat mat = ASM::QImageToCvMat(image, false);
+        cv::Mat mat = ASM::QImageToCvMat(image);
         prevMat = mat;
         if (trackingModule.initialized())
         {
@@ -89,6 +88,7 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
                 cv::circle(mat, p.asCVPoint(), 10, cv::Scalar(255, 255, 0));
         }
 
+        image = ASM::cvMatToQImage(mat);
         image = image.scaled(m_imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
         // QPixmap::fromImage create a new buffer for the pixmap

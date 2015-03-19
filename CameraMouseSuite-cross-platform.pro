@@ -36,7 +36,14 @@ unix {
 
 win32 {
     INCLUDEPATH += $$(OPENCV_INCLUDE)
-    LIBS += $$(OPENCV_DIR)/lib/*.lib
+    CONFIG(debug, debug|release) {
+        LIBS += $$(OPENCV_DIR)/lib/*d.lib
+        message(Debug configuration!)
+    }
+    CONFIG(release, debug|release) {
+        LIBS += $$(OPENCV_DIR)/lib/*[0-9].lib
+        message(Release configuration!)
+    }
 }
 
 SOURCES += *.cpp
