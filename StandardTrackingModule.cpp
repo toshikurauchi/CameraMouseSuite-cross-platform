@@ -26,7 +26,7 @@ namespace CMS {
 StandardTrackingModule::StandardTrackingModule() :
     isInitialized(false),
     winSize(10, 10),
-    criteria(cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, 20, 0.03),
+    criteria(cv::TermCriteria::COUNT | cv::TermCriteria::EPS, 20, 0.03),
     imageSize(0,0)
 {
 }

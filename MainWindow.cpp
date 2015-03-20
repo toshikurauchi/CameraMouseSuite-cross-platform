@@ -83,9 +83,11 @@ void MainWindow::setCamera(const QCameraInfo &cameraInfo)
 
     connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()));
     camera->setViewfinder(videoManagerSurface);
-    camera->setCaptureMode(QCamera::CaptureViewfinder);
 
     camera->start();
+
+    camera->setCaptureMode(QCamera::CaptureViewfinder);
+    camera->searchAndLock();
 }
 
 } // namespace CMS
