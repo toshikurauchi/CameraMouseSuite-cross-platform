@@ -15,36 +15,38 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_STANDARDTRACKINGMODULE_H
-#define CMS_STANDARDTRACKINGMODULE_H
+#ifndef CMS_TRACKINGMODULE_H
+#define CMS_TRACKINGMODULE_H
 
-#include <opencv/cv.h>
-#include <vector>
+#include <cv.h>
 
 #include "Point.h"
-#include "TrackingModule.h"
 
 namespace CMS {
 
-class StandardTrackingModule : public ITrackingModule
+class ITrackingModule
 {
 public:
-    StandardTrackingModule();
-    Point track(cv::Mat &frame);
-    void setTrackPoint(cv::Mat frame, Point point);
-    cv::Size getImageSize();
-    bool initialized();
+    virtual Point track(cv::Mat &frame) = 0;
+    virtual void setTrackPoint(cv::Mat frame, Point point) = 0;
+    virtual cv::Size getImageSize() = 0;
+    virtual bool initialized() = 0;
+};
+
+class TrackingModuleSanityCheck
+{
+public:
+    TrackingModuleSanityCheck(ITrackingModule *trackingModule);
+    void checkInitialized();
+    void checkFrameNotEmpty(cv::Mat &frame);
+    void checkFrameSize(cv::Mat &frame);
+    void limitTPDelta(cv::Point2f &cur, cv::Point2f &last);
 
 private:
-    TrackingModuleSanityCheck sanityCheck;
-    bool isInitialized;
-    cv::Size winSize;
-    cv::TermCriteria criteria;
-    cv::Mat prevGrey;
-    std::vector<cv::Point2f> prevTrackPoints;
-    cv::Size imageSize;
+    ITrackingModule *trackingModule;
 };
 
 } // namespace CMS
 
-#endif // CMS_STANDARDTRACKINGMODULE_H
+#endif // CMS_TRACKINGMODULE_H
+

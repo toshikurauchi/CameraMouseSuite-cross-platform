@@ -24,7 +24,7 @@
 #include <QAbstractVideoSurface>
 #include <opencv/cv.h>
 
-#include "StandardTrackingModule.h"
+#include "TrackingModule.h"
 
 namespace CMS {
 
@@ -34,6 +34,7 @@ class VideoManagerSurface : public QAbstractVideoSurface
 
 public:
     VideoManagerSurface(QLabel *imageLabel, QObject *parent = 0);
+    ~VideoManagerSurface();
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
     bool present(const QVideoFrame &frame);
 
@@ -44,7 +45,7 @@ private:
     QLabel *m_imageLabel;
     QList<QVideoFrame::PixelFormat> supportedFormats;
     QSize frameSize;
-    StandardTrackingModule trackingModule;
+    ITrackingModule *trackingModule;
     cv::Mat prevMat;
 };
 

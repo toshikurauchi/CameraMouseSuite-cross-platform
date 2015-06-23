@@ -51,4 +51,29 @@ cv::Point2f Point::asCVPoint()
     return cv::Point2f((float)x, (float)y);
 }
 
+cv::Point Point::asCVIntPoint()
+{
+    return cv::Point((int)x, (int)y);
+}
+
+Point Point::operator+(Point other)
+{
+    return Point(x + other.x, y + other.y);
+}
+
+Point Point::operator-(Point other)
+{
+    return Point(x - other.x, y - other.y);
+}
+
+Point Point::operator*(double scalar)
+{
+    return Point(x * scalar, y * scalar);
+}
+
+Point Point::operator/(double scalar)
+{
+    return Point(x / scalar, y / scalar);
+}
+
 } // namespace CMS

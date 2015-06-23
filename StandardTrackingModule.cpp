@@ -15,7 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdexcept>
 #include <qdebug.h>
 
 #include "StandardTrackingModule.h"
@@ -24,6 +23,7 @@
 namespace CMS {
 
 StandardTrackingModule::StandardTrackingModule() :
+    sanityCheck(this),
     isInitialized(false),
     winSize(10, 10),
     criteria(cv::TermCriteria::COUNT | cv::TermCriteria::EPS, 20, 0.03),
@@ -33,14 +33,9 @@ StandardTrackingModule::StandardTrackingModule() :
 
 Point StandardTrackingModule::track(cv::Mat &frame)
 {
-    if (!isInitialized)
-        throw std::logic_error("No point set to be tracked");
-
-    if (frame.empty())
-        throw std::invalid_argument("Frame is empty!");
-
-    if (frame.size() != imageSize)
-        throw std::invalid_argument("Invalid frame sizes");
+    sanityCheck.checkInitialized();
+    sanityCheck.checkFrameNotEmpty(frame);
+    sanityCheck.checkFrameSize(frame);
 
     cv::Mat grey = ASM::convertToGray(frame);
 
@@ -54,7 +49,7 @@ Point StandardTrackingModule::track(cv::Mat &frame)
 
     Point imagePoint;
 
-    limitTPDelta(currentTrackPoints[0], prevTrackPoints[0]);
+    sanityCheck.limitTPDelta(currentTrackPoints[0], prevTrackPoints[0]);
 
     if (featuresFound[0])
     {
@@ -69,8 +64,7 @@ Point StandardTrackingModule::track(cv::Mat &frame)
 
 void StandardTrackingModule::setTrackPoint(cv::Mat frame, Point point)
 {
-    if (frame.empty())
-        throw std::invalid_argument("Frame is empty!");
+    sanityCheck.checkFrameNotEmpty(frame);
 
     imageSize = frame.size();
     if (point.X() < 0 || point.X() >= imageSize.width ||
@@ -86,23 +80,14 @@ void StandardTrackingModule::setTrackPoint(cv::Mat frame, Point point)
     prevGrey = ASM::convertToGray(frame);
 }
 
+cv::Size StandardTrackingModule::getImageSize()
+{
+    return imageSize;
+}
+
 bool StandardTrackingModule::initialized()
 {
     return isInitialized;
-}
-
-// find magnitude of change between cur and last TrackPoint in
-// camera image coordinates. If too far limit change.
-void StandardTrackingModule::limitTPDelta(cv::Point2f &cur, cv::Point2f &last)
-{
-    double difX = cur.x - last.x;
-    double difY = cur.y - last.y;
-    double dist = difX * difX + difY * difY;
-    if (dist > 35*35)
-    {
-        cur.x = last.x;
-        cur.y = last.y;
-    }
 }
 
 } // namespace CMS

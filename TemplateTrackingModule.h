@@ -15,21 +15,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_STANDARDTRACKINGMODULE_H
-#define CMS_STANDARDTRACKINGMODULE_H
+#ifndef CMS_TEMPLATETRACKINGMODULE_H
+#define CMS_TEMPLATETRACKINGMODULE_H
 
-#include <opencv/cv.h>
-#include <vector>
-
-#include "Point.h"
 #include "TrackingModule.h"
 
 namespace CMS {
 
-class StandardTrackingModule : public ITrackingModule
+class TemplateTrackingModule : public ITrackingModule
 {
 public:
-    StandardTrackingModule();
+    TemplateTrackingModule(cv::Size templateSize);
     Point track(cv::Mat &frame);
     void setTrackPoint(cv::Mat frame, Point point);
     cv::Size getImageSize();
@@ -38,13 +34,19 @@ public:
 private:
     TrackingModuleSanityCheck sanityCheck;
     bool isInitialized;
-    cv::Size winSize;
-    cv::TermCriteria criteria;
-    cv::Mat prevGrey;
-    std::vector<cv::Point2f> prevTrackPoints;
+    int workingWidth;
     cv::Size imageSize;
+    cv::Size templateSize;
+    cv::Mat templ;
+    cv::Mat result;
+    float scaleFactor;
+    cv::Point2f prevPoint;
+
+    int adjustPosition(int pos, int limit);
+    cv::Point adjustPoint(cv::Point point, cv::Size limits);
+    cv::Mat workingFrame(cv::Mat &frame);
 };
 
 } // namespace CMS
 
-#endif // CMS_STANDARDTRACKINGMODULE_H
+#endif // CMS_TEMPLATETRACKINGMODULE_H

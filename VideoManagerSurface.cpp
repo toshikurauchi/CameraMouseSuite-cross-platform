@@ -22,15 +22,22 @@
 #include "VideoManagerSurface.h"
 #include "asmOpenCV.h"
 #include "Point.h"
+#include "TemplateTrackingModule.h"
 
 namespace CMS {
 
 VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) : QAbstractVideoSurface(parent)
 {
+    trackingModule = new TemplateTrackingModule(cv::Size(50, 50)); // TODO magic constants are not nice :(
     m_imageLabel = imageLabel;
     supportedFormats = QList<QVideoFrame::PixelFormat>() << QVideoFrame::Format_RGB24
                                                          << QVideoFrame::Format_RGB32;
     connect(imageLabel, SIGNAL(mousePressed(QMouseEvent*)), this, SLOT(mousePressEvent(QMouseEvent*)));
+}
+
+VideoManagerSurface::~VideoManagerSurface()
+{
+    delete(trackingModule);
 }
 
 QList<QVideoFrame::PixelFormat> VideoManagerSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const
@@ -81,9 +88,9 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
             frameSize = image.size();
         cv::Mat mat = ASM::QImageToCvMat(image);
         prevMat = mat;
-        if (trackingModule.initialized())
+        if (trackingModule->initialized())
         {
-            Point p = trackingModule.track(mat);
+            Point p = trackingModule->track(mat);
             if (!p.empty())
                 cv::circle(mat, p.asCVPoint(), 10, cv::Scalar(255, 255, 0));
         }
@@ -110,7 +117,7 @@ void VideoManagerSurface::mousePressEvent(QMouseEvent *event)
     int x = frameSize.width() * event->x() / m_imageLabel->size().width();
     int y = frameSize.height() * event->y() / m_imageLabel->size().height();
     if (!prevMat.empty())
-        trackingModule.setTrackPoint(prevMat, Point(x, y));
+        trackingModule->setTrackPoint(prevMat, Point(x, y));
 }
 
 } // namespace CMS

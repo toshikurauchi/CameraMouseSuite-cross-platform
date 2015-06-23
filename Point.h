@@ -32,6 +32,11 @@ public:
     double X();
     double Y();
     cv::Point2f asCVPoint();
+    cv::Point asCVIntPoint();
+    Point operator+(Point other);
+    Point operator-(Point other);
+    Point operator*(double scalar);
+    Point operator/(double scalar);
 
 private:
     bool isEmpty;
