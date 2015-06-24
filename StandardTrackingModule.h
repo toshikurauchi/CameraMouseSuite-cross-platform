@@ -33,11 +33,11 @@ public:
     Point track(cv::Mat &frame);
     void setTrackPoint(cv::Mat frame, Point point);
     cv::Size getImageSize();
-    bool initialized();
+    bool isInitialized();
 
 private:
     TrackingModuleSanityCheck sanityCheck;
-    bool isInitialized;
+    bool initialized;
     cv::Size winSize;
     cv::TermCriteria criteria;
     cv::Mat prevGrey;

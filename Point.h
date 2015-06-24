@@ -36,7 +36,9 @@ public:
     Point operator+(Point other);
     Point operator-(Point other);
     Point operator*(double scalar);
+    double operator*(Point other); // dot product
     Point operator/(double scalar);
+    Point elMult(Point other); // elementwise multiplication
 
 private:
     bool isEmpty;

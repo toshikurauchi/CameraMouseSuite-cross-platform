@@ -71,9 +71,19 @@ Point Point::operator*(double scalar)
     return Point(x * scalar, y * scalar);
 }
 
+double Point::operator *(Point other)
+{
+    return x * other.x + y * other.y;
+}
+
 Point Point::operator/(double scalar)
 {
     return Point(x / scalar, y / scalar);
+}
+
+Point Point::elMult(Point other)
+{
+    return Point(x * other.x, y * other.y);
 }
 
 } // namespace CMS

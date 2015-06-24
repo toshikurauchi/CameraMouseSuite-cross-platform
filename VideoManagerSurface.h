@@ -25,6 +25,7 @@
 #include <opencv/cv.h>
 
 #include "TrackingModule.h"
+#include "MouseControlModule.h"
 
 namespace CMS {
 
@@ -46,6 +47,7 @@ private:
     QList<QVideoFrame::PixelFormat> supportedFormats;
     QSize frameSize;
     ITrackingModule *trackingModule;
+    MouseControlModule *controlModule;
     cv::Mat prevMat;
 };
 

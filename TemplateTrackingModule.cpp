@@ -21,7 +21,7 @@ namespace CMS {
 
 TemplateTrackingModule::TemplateTrackingModule(cv::Size templateSize) :
     sanityCheck(this),
-    isInitialized(false),
+    initialized(false),
     workingWidth(640),
     templateSize(templateSize)
 {
@@ -99,7 +99,7 @@ void TemplateTrackingModule::setTrackPoint(cv::Mat frame, Point point)
     int result_rows = smallFrame.rows - templ.rows + 1;
     result.create(result_rows, result_cols, CV_32FC1);
 
-    isInitialized = true;
+    initialized = true;
 }
 
 cv::Size TemplateTrackingModule::getImageSize()
@@ -107,9 +107,9 @@ cv::Size TemplateTrackingModule::getImageSize()
     return imageSize;
 }
 
-bool TemplateTrackingModule::initialized()
+bool TemplateTrackingModule::isInitialized()
 {
-    return isInitialized;
+    return initialized;
 }
 
 int TemplateTrackingModule::adjustPosition(int pos, int limit)

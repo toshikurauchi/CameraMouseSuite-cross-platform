@@ -29,6 +29,7 @@ namespace CMS {
 VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) : QAbstractVideoSurface(parent)
 {
     trackingModule = new TemplateTrackingModule(cv::Size(50, 50)); // TODO magic constants are not nice :(
+    controlModule = new MouseControlModule;
     m_imageLabel = imageLabel;
     supportedFormats = QList<QVideoFrame::PixelFormat>() << QVideoFrame::Format_RGB24
                                                          << QVideoFrame::Format_RGB32;
@@ -88,11 +89,14 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
             frameSize = image.size();
         cv::Mat mat = ASM::QImageToCvMat(image);
         prevMat = mat;
-        if (trackingModule->initialized())
+        if (trackingModule->isInitialized())
         {
-            Point p = trackingModule->track(mat);
-            if (!p.empty())
-                cv::circle(mat, p.asCVPoint(), 10, cv::Scalar(255, 255, 0));
+            Point featurePosition = trackingModule->track(mat);
+            if (!featurePosition.empty())
+            {
+                cv::circle(mat, featurePosition.asCVPoint(), 10, cv::Scalar(255, 255, 0));
+                controlModule->update(featurePosition);
+            }
         }
 
         image = ASM::cvMatToQImage(mat);
@@ -116,8 +120,12 @@ void VideoManagerSurface::mousePressEvent(QMouseEvent *event)
         return;
     int x = frameSize.width() * event->x() / m_imageLabel->size().width();
     int y = frameSize.height() * event->y() / m_imageLabel->size().height();
+    Point position(x, y);
     if (!prevMat.empty())
-        trackingModule->setTrackPoint(prevMat, Point(x, y));
+    {
+        trackingModule->setTrackPoint(prevMat, position);
+        controlModule->setFeatureReference(position);
+    }
 }
 
 } // namespace CMS

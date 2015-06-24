@@ -15,38 +15,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_TEMPLATETRACKINGMODULE_H
-#define CMS_TEMPLATETRACKINGMODULE_H
+#ifndef MOUSECONTROLMODULE_H
+#define MOUSECONTROLMODULE_H
 
-#include "TrackingModule.h"
+#include "Point.h"
+#include "Mouse.h"
 
 namespace CMS {
 
-class TemplateTrackingModule : public ITrackingModule
+class MouseControlModule
 {
 public:
-    TemplateTrackingModule(cv::Size templateSize);
-    Point track(cv::Mat &frame);
-    void setTrackPoint(cv::Mat frame, Point point);
-    cv::Size getImageSize();
+    MouseControlModule();
+    ~MouseControlModule();
+    void setFeatureReference(Point featureReference);
     bool isInitialized();
+    void update(Point featurePosition);
 
 private:
-    TrackingModuleSanityCheck sanityCheck;
     bool initialized;
-    int workingWidth;
-    cv::Size imageSize;
-    cv::Size templateSize;
-    cv::Mat templ;
-    cv::Mat result;
-    float scaleFactor;
-    cv::Point2f prevPoint;
-
-    int adjustPosition(int pos, int limit);
-    cv::Point adjustPoint(cv::Point point, cv::Size limits);
-    cv::Mat workingFrame(cv::Mat &frame);
+    Point screenReference;
+    Point featureReference;
+    Point gain;
+    IMouse *mouse;
 };
 
 } // namespace CMS
 
-#endif // CMS_TEMPLATETRACKINGMODULE_H
+#endif // MOUSECONTROLMODULE_H

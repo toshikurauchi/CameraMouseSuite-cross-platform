@@ -30,7 +30,7 @@ public:
     virtual Point track(cv::Mat &frame) = 0;
     virtual void setTrackPoint(cv::Mat frame, Point point) = 0;
     virtual cv::Size getImageSize() = 0;
-    virtual bool initialized() = 0;
+    virtual bool isInitialized() = 0;
 };
 
 class TrackingModuleSanityCheck

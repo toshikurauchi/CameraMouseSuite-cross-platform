@@ -34,6 +34,10 @@ unix {
     PKGCONFIG += opencv
 }
 
+mac {
+    LIBS += -framework ApplicationServices
+}
+
 win32 {
     INCLUDEPATH += $$(OPENCV_INCLUDE)
     CONFIG(debug, debug|release) {

@@ -15,38 +15,58 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_TEMPLATETRACKINGMODULE_H
-#define CMS_TEMPLATETRACKINGMODULE_H
+#ifndef CMS_MOUSE_H
+#define CMS_MOUSE_H
 
-#include "TrackingModule.h"
+#include <QObject> // Included to have the OS defines
+
+#include "Point.h"
 
 namespace CMS {
 
-class TemplateTrackingModule : public ITrackingModule
+class IMouse
 {
 public:
-    TemplateTrackingModule(cv::Size templateSize);
-    Point track(cv::Mat &frame);
-    void setTrackPoint(cv::Mat frame, Point point);
-    cv::Size getImageSize();
-    bool isInitialized();
-
-private:
-    TrackingModuleSanityCheck sanityCheck;
-    bool initialized;
-    int workingWidth;
-    cv::Size imageSize;
-    cv::Size templateSize;
-    cv::Mat templ;
-    cv::Mat result;
-    float scaleFactor;
-    cv::Point2f prevPoint;
-
-    int adjustPosition(int pos, int limit);
-    cv::Point adjustPoint(cv::Point point, cv::Size limits);
-    cv::Mat workingFrame(cv::Mat &frame);
+    void move(Point p);
+    virtual void move(double x, double y) = 0;
+    virtual void click() = 0;
 };
+
+class MouseFactory
+{
+public:
+    static IMouse* newMouse();
+};
+
+#ifdef Q_OS_LINUX
+
+class LinuxMouse : public IMouse
+{
+public:
+    void move(double x, double y);
+    void click();
+};
+
+#elif defined Q_OS_WIN
+
+class WindowsMouse : public IMouse
+{
+public:
+    void move(double x, double y);
+    void click();
+};
+
+#elif defined Q_OS_MAC
+
+class MacMouse : public IMouse
+{
+public:
+    void move(double x, double y);
+    void click();
+};
+
+#endif
 
 } // namespace CMS
 
-#endif // CMS_TEMPLATETRACKINGMODULE_H
+#endif // CMS_MOUSE_H

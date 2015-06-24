@@ -28,7 +28,7 @@ TrackingModuleSanityCheck::TrackingModuleSanityCheck(ITrackingModule *trackingMo
 
 void TrackingModuleSanityCheck::checkInitialized()
 {
-    if (!trackingModule->initialized())
+    if (!trackingModule->isInitialized())
         throw std::logic_error("No point set to be tracked");
 }
 

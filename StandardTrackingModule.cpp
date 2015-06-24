@@ -24,7 +24,7 @@ namespace CMS {
 
 StandardTrackingModule::StandardTrackingModule() :
     sanityCheck(this),
-    isInitialized(false),
+    initialized(false),
     winSize(10, 10),
     criteria(cv::TermCriteria::COUNT | cv::TermCriteria::EPS, 20, 0.03),
     imageSize(0,0)
@@ -73,7 +73,7 @@ void StandardTrackingModule::setTrackPoint(cv::Mat frame, Point point)
         return;
     }
 
-    isInitialized = true;
+    initialized = true;
 
     prevTrackPoints = std::vector<cv::Point2f>();
     prevTrackPoints.push_back(point.asCVPoint());
@@ -85,9 +85,9 @@ cv::Size StandardTrackingModule::getImageSize()
     return imageSize;
 }
 
-bool StandardTrackingModule::initialized()
+bool StandardTrackingModule::isInitialized()
 {
-    return isInitialized;
+    return initialized;
 }
 
 } // namespace CMS
