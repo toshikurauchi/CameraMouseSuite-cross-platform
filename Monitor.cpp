@@ -17,41 +17,56 @@
 
 #include <stdexcept>
 
-#include "MouseControlModule.h"
 #include "Monitor.h"
+
+#ifdef Q_OS_LINUX
+#elif defined Q_OS_WIN
+#elif defined Q_OS_MAC
+#include <ApplicationServices/ApplicationServices.h>
+#else
+#endif
 
 namespace CMS {
 
-MouseControlModule::MouseControlModule() :
-    initialized(false),
-    screenReference(MonitorFactory::newMonitor()->getResolution()/2),
-    gain(6, 6), // TODO Get value from GUI
-    mouse(MouseFactory::newMouse())
+IMonitor* MonitorFactory::newMonitor()
 {
+#ifdef Q_OS_LINUX
+    return new LinuxMonitor;
+#elif defined Q_OS_WIN
+    return new WindowsMonitor;
+#elif defined Q_OS_MAC
+    return new MacMonitor;
+#else
+    std::runtime_error("Operating System not supported. Cannot get monitor information.");
+    return 0;
+#endif
 }
 
-MouseControlModule::~MouseControlModule()
+#ifdef Q_OS_LINUX
+
+Point LinuxMonitor::getResolution()
 {
+    return Point();
 }
 
-void MouseControlModule::setFeatureReference(Point featureReference)
+#elif defined Q_OS_WIN
+
+Point WindowsMonitor::getResolution()
 {
-    this->featureReference = featureReference;
-    initialized = true;
+    return Point();
 }
 
-bool MouseControlModule::isInitialized()
+#elif defined Q_OS_MAC
+
+Point MacMonitor::getResolution()
 {
-    return initialized;
+    CGDirectDisplayID display = CGMainDisplayID();
+    size_t width = CGDisplayPixelsWide(display);
+    size_t height = CGDisplayPixelsHigh(display);
+    return Point(width, height);
 }
 
-void MouseControlModule::update(Point featurePosition)
-{
-    if (!initialized)
-        throw std::logic_error("No reference feature position");
-
-    Point displacement = (featurePosition - featureReference).elMult(gain);
-    mouse->move(screenReference + displacement);
-}
+#endif
 
 } // namespace CMS
+
