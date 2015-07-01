@@ -28,7 +28,7 @@ namespace CMS {
 
 VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) : QAbstractVideoSurface(parent)
 {
-    trackingModule = new TemplateTrackingModule(cv::Size(50, 50)); // TODO magic constants are not nice :(
+    trackingModule = new TemplateTrackingModule(0.08); // TODO magic constants are not nice :(
     controlModule = new MouseControlModule;
     m_imageLabel = imageLabel;
     supportedFormats = QList<QVideoFrame::PixelFormat>() << QVideoFrame::Format_RGB24

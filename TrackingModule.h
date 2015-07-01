@@ -27,6 +27,7 @@ namespace CMS {
 class ITrackingModule
 {
 public:
+    virtual ~ITrackingModule();
     virtual Point track(cv::Mat &frame) = 0;
     virtual void setTrackPoint(cv::Mat frame, Point point) = 0;
     virtual cv::Size getImageSize() = 0;

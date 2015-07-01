@@ -21,6 +21,9 @@
 
 namespace CMS {
 
+ITrackingModule::~ITrackingModule()
+{}
+
 TrackingModuleSanityCheck::TrackingModuleSanityCheck(ITrackingModule *trackingModule) :
     trackingModule(trackingModule)
 {

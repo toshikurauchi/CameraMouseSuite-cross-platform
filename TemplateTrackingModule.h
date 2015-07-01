@@ -25,7 +25,7 @@ namespace CMS {
 class TemplateTrackingModule : public ITrackingModule
 {
 public:
-    TemplateTrackingModule(cv::Size templateSize);
+    TemplateTrackingModule(double templateSizeRatio);
     Point track(cv::Mat &frame);
     void setTrackPoint(cv::Mat frame, Point point);
     cv::Size getImageSize();
@@ -36,11 +36,15 @@ private:
     bool initialized;
     int workingWidth;
     cv::Size imageSize;
+    cv::Size fullImageSize;
+    double templateSizeRatio;
     cv::Size templateSize;
+    cv::Size fullTemplateSize;
     cv::Mat templ;
+    cv::Mat fullTempl;
     cv::Mat result;
+    cv::Mat fullResult;
     float scaleFactor;
-    cv::Point2f prevPoint;
 
     int adjustPosition(int pos, int limit);
     cv::Point adjustPoint(cv::Point point, cv::Size limits);
