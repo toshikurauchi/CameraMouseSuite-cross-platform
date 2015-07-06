@@ -26,7 +26,11 @@
 
 namespace CMS {
 
-VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) : QAbstractVideoSurface(parent)
+VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) :
+    QAbstractVideoSurface(parent),
+    controlling(false),
+    restarted(true),
+    keyboard(KeyboardFactory::newKeyboard())
 {
     trackingModule = new TemplateTrackingModule(0.08); // TODO magic constants are not nice :(
     controlModule = new MouseControlModule;
@@ -39,6 +43,7 @@ VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) : 
 VideoManagerSurface::~VideoManagerSurface()
 {
     delete(trackingModule);
+    delete(keyboard);
 }
 
 QList<QVideoFrame::PixelFormat> VideoManagerSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const
@@ -55,6 +60,19 @@ QList<QVideoFrame::PixelFormat> VideoManagerSurface::supportedPixelFormats(QAbst
 
 bool VideoManagerSurface::present(const QVideoFrame &frame)
 {
+    while (keyboard->hasNextEvent())
+    {
+        KeyEvent event = keyboard->nextEvent();
+        if (event.getKey() == KEY_CONTROL && event.getState() == KEY_STATE_DOWN)
+        {
+            controlling = !controlling;
+            if (controlling)
+            {
+                restarted = true;
+            }
+        }
+    }
+
     if (!supportedFormats.contains(frame.pixelFormat()))
     {
         setError(IncorrectFormatError);
@@ -95,7 +113,15 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
             if (!featurePosition.empty())
             {
                 cv::circle(mat, featurePosition.asCVPoint(), 10, cv::Scalar(255, 255, 0));
-                controlModule->update(featurePosition);
+                if (controlling)
+                {
+                    if (restarted)
+                    {
+                        controlModule->setFeatureReference(featurePosition);
+                        restarted = false;
+                    }
+                    controlModule->update(featurePosition);
+                }
             }
         }
 

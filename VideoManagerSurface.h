@@ -26,8 +26,11 @@
 
 #include "TrackingModule.h"
 #include "MouseControlModule.h"
+#include "Keyboard.h"
 
 namespace CMS {
+
+// TODO I think this class has too many resposibilities
 
 class VideoManagerSurface : public QAbstractVideoSurface
 {
@@ -49,6 +52,9 @@ private:
     ITrackingModule *trackingModule;
     MouseControlModule *controlModule;
     cv::Mat prevMat;
+    bool controlling;
+    bool restarted;
+    IKeyboard *keyboard;
 };
 
 } // namespace CMS

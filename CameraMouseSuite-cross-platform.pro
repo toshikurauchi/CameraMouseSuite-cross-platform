@@ -35,7 +35,11 @@ unix {
 }
 
 mac {
-    LIBS += -framework ApplicationServices
+    LIBS += -framework ApplicationServices \
+            -framework AppKit \
+            -framework Foundation
+
+    OBJECTIVE_SOURCES += MacKeyboard.mm
 }
 
 win32 {

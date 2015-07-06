@@ -16,43 +16,69 @@
  */
 
 #include <stdexcept>
+#include <QDebug>
 
-#include "MouseControlModule.h"
-#include "Monitor.h"
+#include "Keyboard.h"
 
 namespace CMS {
 
-MouseControlModule::MouseControlModule() :
-    initialized(false),
-    screenReference(MonitorFactory::newMonitor()->getResolution()/2),
-    gain(6, 6), // TODO Get value from GUI
-    mouse(MouseFactory::newMouse())
+KeyEvent::KeyEvent(Key key, KeyState state) :
+    key(key), state(state)
+{}
+
+Key KeyEvent::getKey()
 {
+    return key;
 }
 
-MouseControlModule::~MouseControlModule()
+KeyState KeyEvent::getState()
 {
-    delete(mouse);
+    return state;
 }
 
-void MouseControlModule::setFeatureReference(Point featureReference)
+IKeyboard::~IKeyboard()
+{}
+
+IKeyboard* KeyboardFactory::newKeyboard()
 {
-    this->featureReference = featureReference;
-    initialized = true;
+#ifdef Q_OS_LINUX
+    return new LinuxKeyboard;
+#elif defined Q_OS_WIN
+    return new WindowsKeyboard;
+#elif defined Q_OS_MAC
+    return new MacKeyboard;
+#else
+    std::runtime_error("Operating System not supported. Cannot control mouse.");
+    return 0;
+#endif
 }
 
-bool MouseControlModule::isInitialized()
+#ifdef Q_OS_LINUX
+
+KeyEvent LinuxKeyboard::nextEvent()
+{}
+
+bool LinuxKeyboard::hasNextEvent()
 {
-    return initialized;
+    return false;
 }
 
-void MouseControlModule::update(Point featurePosition)
-{
-    if (!initialized)
-        throw std::logic_error("No reference feature position");
+#elif defined Q_OS_WIN
 
-    Point displacement = (featurePosition - featureReference).elMult(gain);
-    mouse->move(screenReference + displacement);
+KeyEvent WindowsKeyboard::nextEvent()
+{}
+
+bool WindowsKeyboard::hasNextEvent()
+{
+    return false;
 }
+
+#elif defined Q_OS_MAC
+
+
+
+#else
+#endif
 
 } // namespace CMS
+
