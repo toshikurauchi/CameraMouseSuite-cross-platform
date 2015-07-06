@@ -20,6 +20,15 @@
 
 #include "Keyboard.h"
 
+#ifdef Q_OS_LINUX
+#elif defined Q_OS_WIN
+#include <queue>
+#include <Windows.h>
+#include <QMutex>
+#elif defined Q_OS_MAC
+#else
+#endif
+
 namespace CMS {
 
 KeyEvent::KeyEvent(Key key, KeyState state) :
@@ -65,18 +74,97 @@ bool LinuxKeyboard::hasNextEvent()
 
 #elif defined Q_OS_WIN
 
+// Use an unnamed namespace to restrict global variables scope
+namespace {
+int instances = 0;
+static HHOOK keyboardHook;
+std::queue<KeyEvent> events;
+QMutex mutex;
+} // namespace
+
+LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    Key key = KEY_NONE;
+    KeyState state = KEY_STATE_NONE;
+    if (nCode == HC_ACTION)
+    {
+        PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT)lParam;
+
+        switch (p->vkCode)
+        {
+        case VK_RCONTROL:
+        case VK_LCONTROL:
+        case VK_CONTROL:
+            key = KEY_CONTROL;
+            break;
+        case VK_RMENU:
+        case VK_LMENU:
+        case VK_MENU:
+            key = KEY_ALT;
+            break;
+        }
+
+        switch (wParam)
+        {
+        case WM_KEYDOWN:
+        case WM_SYSKEYDOWN:
+            state = KEY_STATE_DOWN;
+            break;
+        case WM_KEYUP:
+        case WM_SYSKEYUP:
+            state = KEY_STATE_UP;
+            break;
+        }
+    }
+
+    if (key != KEY_NONE && state != KEY_STATE_NONE)
+    {
+        mutex.lock();
+        events.push(KeyEvent(key, state));
+        mutex.unlock();
+    }
+
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+WindowsKeyboard::WindowsKeyboard()
+{
+    instances++;
+    if (instances == 1)
+    {
+        keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, 0, 0);
+    }
+}
+
+WindowsKeyboard::~WindowsKeyboard()
+{
+    instances--;
+    if (instances == 0)
+    {
+        UnhookWindowsHookEx(keyboardHook);
+    }
+}
+
 KeyEvent WindowsKeyboard::nextEvent()
-{}
+{
+    if (!hasNextEvent())
+    {
+        throw std::logic_error("No events available");
+    }
+
+    mutex.lock();
+    KeyEvent event = events.front();
+    events.pop();
+    mutex.unlock();
+    return event;
+}
 
 bool WindowsKeyboard::hasNextEvent()
 {
-    return false;
+    return !events.empty();
 }
 
 #elif defined Q_OS_MAC
-
-
-
 #else
 #endif
 

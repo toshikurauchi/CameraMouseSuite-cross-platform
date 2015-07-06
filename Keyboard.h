@@ -23,7 +23,7 @@
 #ifdef Q_OS_LINUX
 #elif defined Q_OS_WIN
 #elif defined Q_OS_MAC
-#include <ApplicationServices/ApplicationServices.h>
+#include <QMutex>
 #include <queue>
 #else
 #endif
@@ -33,13 +33,16 @@ namespace CMS {
 enum Key
 {
     KEY_CONTROL,
-    KEY_COMMAND
+    KEY_COMMAND,
+    KEY_ALT,
+    KEY_NONE
 };
 
 enum KeyState
 {
     KEY_STATE_DOWN,
-    KEY_STATE_UP
+    KEY_STATE_UP,
+    KEY_STATE_NONE
 };
 
 class KeyEvent
@@ -81,6 +84,8 @@ public:
 class WindowsKeyboard : public IKeyboard
 {
 public:
+    WindowsKeyboard();
+    ~WindowsKeyboard();
     KeyEvent nextEvent();
     bool hasNextEvent();
 };

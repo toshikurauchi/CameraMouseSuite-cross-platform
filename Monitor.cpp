@@ -21,6 +21,7 @@
 
 #ifdef Q_OS_LINUX
 #elif defined Q_OS_WIN
+#include <Windows.h>
 #elif defined Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
 #else
@@ -53,7 +54,9 @@ Point LinuxMonitor::getResolution()
 
 Point WindowsMonitor::getResolution()
 {
-    return Point();
+    int width = GetSystemMetrics(SM_CXSCREEN);
+    int height = GetSystemMetrics(SM_CYSCREEN);
+    return Point(width, height);
 }
 
 #elif defined Q_OS_MAC

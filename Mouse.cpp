@@ -21,6 +21,7 @@
 
 #ifdef Q_OS_LINUX
 #elif defined Q_OS_WIN
+#include <Windows.h>
 #elif defined Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
 #else
@@ -58,10 +59,24 @@ void LinuxMouse::click()
 #elif defined Q_OS_WIN
 
 void WindowsMouse::move(double x, double y)
-{}
+{
+    SetCursorPos((int) x, (int) y);
+}
 
 void WindowsMouse::click()
-{}
+{
+    INPUT input={0};
+    // left down
+    input.type       = INPUT_MOUSE;
+    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+    ::SendInput(1,&input,sizeof(INPUT));
+
+    // left up
+    ::ZeroMemory(&input,sizeof(INPUT));
+    input.type      = INPUT_MOUSE;
+    input.mi.dwFlags  = MOUSEEVENTF_LEFTUP;
+    ::SendInput(1,&input,sizeof(INPUT));
+}
 
 #elif defined Q_OS_MAC
 

@@ -43,7 +43,8 @@ mac {
 }
 
 win32 {
-    INCLUDEPATH += $$(OPENCV_INCLUDE)
+    INCLUDEPATH += $$(OPENCV_INCLUDE) \
+                   $$(OPENCV_INCLUDE)/opencv
     CONFIG(debug, debug|release) {
         LIBS += $$(OPENCV_DIR)/lib/*d.lib
         message(Debug configuration!)
