@@ -15,46 +15,35 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <QMainWindow>
-#include <QCamera>
-#include <QAbstractVideoSurface>
-
 #include "Settings.h"
-
-namespace Ui {
-class MainWindow;
-}
 
 namespace CMS {
 
-class MainWindow : public QMainWindow
+Settings::Settings(QObject *parent) :
+    QObject(parent),
+    enableClicking(false)
 {
-    Q_OBJECT
+}
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+bool Settings::isClickingEnabled()
+{
+    return enableClicking;
+}
 
-private slots:
-    void updateSelectedCamera(QAction *action);
-    void displayCameraError();
-    void setCamera(const QCameraInfo &cameraInfo);
-    void updateDwellSpinBox(int dwellMillis);
-    void updateDwellSlider(double dwellSecs);
+double Settings::getDwellTime()
+{
+    return dwellTime;
+}
 
-private:
-    Ui::MainWindow *ui;
-    QCamera *camera;
-    QAbstractVideoSurface *videoManagerSurface;
-    Settings settings;
+void Settings::setEnableClicking(bool enableClicking)
+{
+    this->enableClicking = enableClicking;
+}
 
-    void setupCameraWidgets();
-    void setupSettingsWidgets();
-};
+void Settings::setDwellTime(double dwellTime)
+{
+    this->dwellTime = dwellTime;
+}
 
 } // namespace CMS
 
-#endif // MAINWINDOW_H

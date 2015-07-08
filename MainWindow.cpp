@@ -29,11 +29,13 @@ namespace CMS {
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    camera(0)
+    camera(0),
+    settings(this)
 {
     ui->setupUi(this);
     setWindowTitle(tr("CameraMouseSuite"));
     setupCameraWidgets();
+    setupSettingsWidgets();
 }
 
 MainWindow::~MainWindow()
@@ -64,6 +66,22 @@ void MainWindow::setupCameraWidgets()
     setCamera(QCameraInfo::defaultCamera());
 }
 
+void MainWindow::setupSettingsWidgets()
+{
+    connect(ui->enableClickingCheckBox, SIGNAL(toggled(bool)), ui->dwellSlider, SLOT(setEnabled(bool)));
+    connect(ui->enableClickingCheckBox, SIGNAL(toggled(bool)), ui->dwellSpinBox, SLOT(setEnabled(bool)));
+    connect(ui->enableClickingCheckBox, SIGNAL(toggled(bool)), &settings, SLOT(setEnableClicking(bool)));
+    bool clickingEnabled = settings.isClickingEnabled();
+    ui->enableClickingCheckBox->setChecked(clickingEnabled);
+    ui->dwellSlider->setEnabled(clickingEnabled);
+    ui->dwellSpinBox->setEnabled(clickingEnabled);
+
+    connect(ui->dwellSpinBox, SIGNAL(valueChanged(double)), &settings, SLOT(setDwellTime(double)));
+    connect(ui->dwellSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateDwellSlider(double)));
+    connect(ui->dwellSlider, SIGNAL(valueChanged(int)), this, SLOT(updateDwellSpinBox(int)));
+    ui->dwellSpinBox->setValue(1.0);
+}
+
 void MainWindow::updateSelectedCamera(QAction *action)
 {
     setCamera(qvariant_cast<QCameraInfo>(action->data()));
@@ -88,6 +106,18 @@ void MainWindow::setCamera(const QCameraInfo &cameraInfo)
 
     camera->setCaptureMode(QCamera::CaptureViewfinder);
     camera->searchAndLock();
+}
+
+void MainWindow::updateDwellSpinBox(int dwellMillis)
+{
+    double dwellTime = dwellMillis / 1000.0;
+    ui->dwellSpinBox->setValue(dwellTime);
+}
+
+void MainWindow::updateDwellSlider(double dwellSecs)
+{
+    int dwellMillis = (int) (dwellSecs * 1000);
+    ui->dwellSlider->setValue(dwellMillis);
 }
 
 } // namespace CMS
