@@ -21,6 +21,15 @@
 #include "Keyboard.h"
 
 #ifdef Q_OS_LINUX
+#include <QThread>
+#include <QMutex>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/keysymdef.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <queue>
 #elif defined Q_OS_WIN
 #include <queue>
 #include <Windows.h>
@@ -64,12 +73,123 @@ IKeyboard* KeyboardFactory::newKeyboard()
 
 #ifdef Q_OS_LINUX
 
+// Use an unnamed namespace to restrict global variables scope
+namespace {
+int instances = 0;
+std::queue<KeyEvent> events;
+QMutex mutex;
+} // namespace
+
+class KeyboardListener : public QThread
+{
+public:
+    KeyboardListener() : running(true)
+    {}
+
+    void run()
+    {
+        // Code from: http://stackoverflow.com/questions/22749444/listening-to-keyboard-events-without-consuming-them-in-x11-keyboard-hooking
+        Display* d = XOpenDisplay(NULL);
+        Window root = DefaultRootWindow(d);
+        Window curFocus;
+        char buf[17];
+        KeySym ks;
+        XComposeStatus comp;
+        int len;
+        int revert;
+
+        XGetInputFocus(d, &curFocus, &revert);
+        XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
+
+        bool stop;
+        runningMutex.lock();
+        stop = !running;
+        runningMutex.unlock();
+        while (!stop)
+        {
+            XEvent ev;
+            XNextEvent(d, &ev); // Will block here, find out a way to move on if the program finishes
+            switch (ev.type)
+            {
+                case FocusOut:
+                    if (curFocus != root)
+                        XSelectInput(d, curFocus, 0);
+                    XGetInputFocus (d, &curFocus, &revert);
+                    if (curFocus == PointerRoot)
+                        curFocus = root;
+                    XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
+                    break;
+
+                case KeyPress:
+                    len = XLookupString(&ev.xkey, buf, 16, &ks, &comp);
+                    switch (ks)
+                    {
+                    case XK_Control_L:
+                    case XK_Control_R:
+                        mutex.lock();
+                        events.push(KeyEvent(KEY_CONTROL, KEY_STATE_DOWN));
+                        mutex.unlock();
+                        break;
+                    }
+            }
+            runningMutex.lock();
+            stop = !running;
+            runningMutex.unlock();
+        }
+    }
+
+    void stop()
+    {
+        runningMutex.lock();
+        running = false;
+        runningMutex.unlock();
+    }
+
+private:
+    bool running;
+    QMutex runningMutex;
+};
+
+// Use an unnamed namespace to restrict global variables scope
+namespace {
+KeyboardListener listener;
+} // namespace
+
+LinuxKeyboard::LinuxKeyboard()
+{
+    instances++;
+    if (instances == 1)
+    {
+        listener.start();
+    }
+}
+
+LinuxKeyboard::~LinuxKeyboard()
+{
+    instances--;
+    if (instances == 0)
+    {
+        listener.stop();
+    }
+}
+
 KeyEvent LinuxKeyboard::nextEvent()
-{}
+{
+    if (!hasNextEvent())
+    {
+        throw std::logic_error("No events available");
+    }
+
+    mutex.lock();
+    KeyEvent event = events.front();
+    events.pop();
+    mutex.unlock();
+    return event;
+}
 
 bool LinuxKeyboard::hasNextEvent()
 {
-    return false;
+    return !events.empty();
 }
 
 #elif defined Q_OS_WIN
@@ -77,7 +197,7 @@ bool LinuxKeyboard::hasNextEvent()
 // Use an unnamed namespace to restrict global variables scope
 namespace {
 int instances = 0;
-static HHOOK keyboardHook;
+HHOOK keyboardHook;
 std::queue<KeyEvent> events;
 QMutex mutex;
 } // namespace

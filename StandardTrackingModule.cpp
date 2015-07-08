@@ -16,6 +16,7 @@
  */
 
 #include <qdebug.h>
+#include <opencv2/video/tracking.hpp>
 
 #include "StandardTrackingModule.h"
 #include "asmOpenCV.h"

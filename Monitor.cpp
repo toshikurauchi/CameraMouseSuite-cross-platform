@@ -20,6 +20,7 @@
 #include "Monitor.h"
 
 #ifdef Q_OS_LINUX
+#include <X11/Xlib.h>
 #elif defined Q_OS_WIN
 #include <Windows.h>
 #elif defined Q_OS_MAC
@@ -47,7 +48,11 @@ IMonitor* MonitorFactory::newMonitor()
 
 Point LinuxMonitor::getResolution()
 {
-    return Point();
+    Display* disp = XOpenDisplay(NULL);
+    Screen*  scrn = DefaultScreenOfDisplay(disp);
+    int width  = scrn->width;
+    int height = scrn->height;
+    return Point(width, height);
 }
 
 #elif defined Q_OS_WIN

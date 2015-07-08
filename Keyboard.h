@@ -75,6 +75,8 @@ public:
 class LinuxKeyboard : public IKeyboard
 {
 public:
+    LinuxKeyboard();
+    ~LinuxKeyboard();
     KeyEvent nextEvent();
     bool hasNextEvent();
 };

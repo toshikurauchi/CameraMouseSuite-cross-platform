@@ -16,10 +16,13 @@
  */
 
 #include <stdexcept>
+#include <QDebug>
 
 #include "Mouse.h"
 
 #ifdef Q_OS_LINUX
+#include <X11/Xlib.h>
+#include <unistd.h>
 #elif defined Q_OS_WIN
 #include <Windows.h>
 #elif defined Q_OS_MAC
@@ -51,10 +54,70 @@ IMouse* MouseFactory::newMouse()
 #ifdef Q_OS_LINUX
 
 void LinuxMouse::move(double x, double y)
-{}
+{
+    Display *display;
+    Window root_window;
+
+    display = XOpenDisplay(NULL);
+
+    if(display == NULL)
+    {
+        throw std::runtime_error("Couldn't open the display");
+    }
+
+    root_window = XRootWindow(display, 0);
+    XSelectInput(display, root_window, KeyReleaseMask);
+
+    XWarpPointer(display, None, root_window, 0, 0, 0, 0, x, y);
+
+    XFlush(display); // Flushes the output buffer, therefore updates the cursor's position.
+    XCloseDisplay(display);
+}
 
 void LinuxMouse::click()
-{}
+{
+    Display *display = XOpenDisplay(NULL);
+    XEvent event;
+
+    if(display == NULL)
+    {
+        throw std::runtime_error("Couldn't open the display");
+    }
+
+    memset(&event, 0x00, sizeof(event));
+
+    event.type = ButtonPress;
+    event.xbutton.button = Button1;
+    event.xbutton.same_screen = True;
+
+    XQueryPointer(display, RootWindow(display, DefaultScreen(display)), &event.xbutton.root, &event.xbutton.window, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
+
+    event.xbutton.subwindow = event.xbutton.window;
+
+    while(event.xbutton.subwindow)
+    {
+        event.xbutton.window = event.xbutton.subwindow;
+
+        XQueryPointer(display, event.xbutton.window, &event.xbutton.root, &event.xbutton.subwindow, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
+    }
+
+    if(XSendEvent(display, PointerWindow, True, 0xfff, &event) == 0)
+    {
+        throw std::runtime_error("Button could not be pressed");
+    }
+    XFlush(display);
+
+    usleep(100000); // Time in microseconds
+
+    event.type = ButtonRelease;
+    event.xbutton.state = 0x100;
+    if(XSendEvent(display, PointerWindow, True, 0xfff, &event) == 0)
+    {
+        throw std::runtime_error("Button could not be released");
+    }
+    XFlush(display);
+    XCloseDisplay(display);
+}
 
 #elif defined Q_OS_WIN
 
