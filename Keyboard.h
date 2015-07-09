@@ -104,9 +104,6 @@ public:
 private:
     std::queue<KeyEvent> events;
     QMutex mutex;
-
-    static CGEventRef CGKeyboardCallback(CGEventTapProxy proxy, CGEventType type,
-                                         CGEventRef event, void *refcon);
 };
 
 #endif

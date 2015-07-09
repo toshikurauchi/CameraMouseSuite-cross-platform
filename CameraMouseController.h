@@ -15,36 +15,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MOUSECONTROLMODULE_H
-#define MOUSECONTROLMODULE_H
+#ifndef CMS_CAMERAMOUSECONTROLLER_H
+#define CMS_CAMERAMOUSECONTROLLER_H
 
+#include <cv.h>
+
+#include "TrackingModule.h"
+#include "MouseControlModule.h"
 #include "Point.h"
-#include "Mouse.h"
-#include "Keyboard.h"
 
 namespace CMS {
 
-class MouseControlModule
+class CameraMouseController
 {
 public:
-    MouseControlModule();
-    ~MouseControlModule();
-    void setFeatureReference(Point featureReference);
-    bool isInitialized();
-    void update(Point featurePosition);
-    void restart();
+    CameraMouseController(ITrackingModule *trackingModule, MouseControlModule *controlModule);
+    ~CameraMouseController();
+    void processFrame(cv::Mat &frame);
+    void processClick(Point position);
 
 private:
-    bool initialized;
-    Point screenReference;
-    Point featureReference;
-    Point gain;
-    IMouse *mouse;
-    IKeyboard *keyboard;
-    bool resetReference;
-    bool controlling;
+    ITrackingModule *trackingModule;
+    MouseControlModule *controlModule;
+    cv::Mat prevFrame;
 };
 
 } // namespace CMS
 
-#endif // MOUSECONTROLMODULE_H
+#endif // CMS_CAMERAMOUSECONTROLLER_H

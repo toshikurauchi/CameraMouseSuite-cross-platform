@@ -27,6 +27,7 @@ namespace CMS {
 class IMouse
 {
 public:
+    virtual ~IMouse();
     void move(Point p);
     virtual void move(double x, double y) = 0;
     virtual void click() = 0;

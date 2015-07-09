@@ -26,13 +26,17 @@ MouseControlModule::MouseControlModule() :
     initialized(false),
     screenReference(MonitorFactory::newMonitor()->getResolution()/2),
     gain(6, 6), // TODO Get value from GUI
-    mouse(MouseFactory::newMouse())
+    mouse(MouseFactory::newMouse()),
+    keyboard(KeyboardFactory::newKeyboard()),
+    resetReference(true),
+    controlling(false)
 {
 }
 
 MouseControlModule::~MouseControlModule()
 {
-    delete(mouse);
+    delete mouse;
+    delete keyboard;
 }
 
 void MouseControlModule::setFeatureReference(Point featureReference)
@@ -48,11 +52,35 @@ bool MouseControlModule::isInitialized()
 
 void MouseControlModule::update(Point featurePosition)
 {
-    if (!initialized)
-        throw std::logic_error("No reference feature position");
+    while (keyboard->hasNextEvent())
+    {
+        KeyEvent event = keyboard->nextEvent();
+        if (event.getKey() == KEY_CONTROL && event.getState() == KEY_STATE_DOWN)
+        {
+            controlling = !controlling;
+            if (controlling)
+            {
+                resetReference = true;
+            }
+        }
+    }
+
+    if (controlling && resetReference)
+    {
+        setFeatureReference(featurePosition);
+        resetReference = false;
+    }
+
+    if (!initialized || !controlling)
+        return;
 
     Point displacement = (featurePosition - featureReference).elMult(gain);
     mouse->move(screenReference + displacement);
+}
+
+void MouseControlModule::restart()
+{
+    resetReference = true;
 }
 
 } // namespace CMS

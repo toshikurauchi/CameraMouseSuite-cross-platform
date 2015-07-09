@@ -32,6 +32,9 @@
 
 namespace CMS {
 
+IMouse::~IMouse()
+{}
+
 void IMouse::move(Point p)
 {
     move(p.X(), p.Y());

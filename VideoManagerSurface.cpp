@@ -26,15 +26,11 @@
 
 namespace CMS {
 
-VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) :
+VideoManagerSurface::VideoManagerSurface(CameraMouseController *controller, QLabel *imageLabel, QObject *parent) :
     QAbstractVideoSurface(parent),
-    controlling(false),
-    restarted(true),
-    keyboard(KeyboardFactory::newKeyboard())
+    controller(controller)
 {
-    trackingModule = new TemplateTrackingModule(0.08); // TODO magic constants are not nice :(
-    controlModule = new MouseControlModule;
-    m_imageLabel = imageLabel;
+    this->imageLabel = imageLabel;
     supportedFormats = QList<QVideoFrame::PixelFormat>() << QVideoFrame::Format_RGB24
                                                          << QVideoFrame::Format_RGB32;
     connect(imageLabel, SIGNAL(mousePressed(QMouseEvent*)), this, SLOT(mousePressEvent(QMouseEvent*)));
@@ -42,8 +38,8 @@ VideoManagerSurface::VideoManagerSurface(QLabel *imageLabel, QObject *parent) :
 
 VideoManagerSurface::~VideoManagerSurface()
 {
-    delete(trackingModule);
-    delete(keyboard);
+    // TODO Move to MainWindow if we decide to keep the pointer there
+    delete(controller);
 }
 
 QList<QVideoFrame::PixelFormat> VideoManagerSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const
@@ -60,19 +56,6 @@ QList<QVideoFrame::PixelFormat> VideoManagerSurface::supportedPixelFormats(QAbst
 
 bool VideoManagerSurface::present(const QVideoFrame &frame)
 {
-    while (keyboard->hasNextEvent())
-    {
-        KeyEvent event = keyboard->nextEvent();
-        if (event.getKey() == KEY_CONTROL && event.getState() == KEY_STATE_DOWN)
-        {
-            controlling = !controlling;
-            if (controlling)
-            {
-                restarted = true;
-            }
-        }
-    }
-
     if (!supportedFormats.contains(frame.pixelFormat()))
     {
         setError(IncorrectFormatError);
@@ -103,38 +86,26 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
         #elif defined Q_OS_MAC
             image = image.mirrored(true, false);
         #endif
-        if (frameSize.isEmpty())
-            frameSize = image.size();
         cv::Mat mat = ASM::QImageToCvMat(image);
-        prevMat = mat;
-        if (trackingModule->isInitialized())
-        {
-            Point featurePosition = trackingModule->track(mat);
-            if (!featurePosition.empty())
-            {
-                cv::circle(mat, featurePosition.asCVPoint(), 10, cv::Scalar(255, 255, 0));
-                if (controlling)
-                {
-                    if (restarted)
-                    {
-                        controlModule->setFeatureReference(featurePosition);
-                        restarted = false;
-                    }
-                    controlModule->update(featurePosition);
-                }
-            }
-        }
+
+        controller->processFrame(mat);
 
         image = ASM::cvMatToQImage(mat);
-        image = image.scaled(m_imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QImage scaledImage = image.scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+        if (frameSize.isEmpty())
+        {
+            frameSize = image.size();
+            frameOffset = Point(imageLabel->size().width() - scaledImage.width(), imageLabel->size().height() - scaledImage.height())/2;
+        }
 
         // QPixmap::fromImage create a new buffer for the pixmap
-        m_imageLabel->setPixmap(QPixmap::fromImage(image));
+        imageLabel->setPixmap(QPixmap::fromImage(scaledImage));
 
         // Release the data
         frameToProcess.unmap();
 
-        m_imageLabel->update();
+        imageLabel->update();
 
         return true;
     }
@@ -144,14 +115,9 @@ void VideoManagerSurface::mousePressEvent(QMouseEvent *event)
 {
     if (frameSize.isEmpty())
         return;
-    int x = frameSize.width() * event->x() / m_imageLabel->size().width();
-    int y = frameSize.height() * event->y() / m_imageLabel->size().height();
-    Point position(x, y);
-    if (!prevMat.empty())
-    {
-        trackingModule->setTrackPoint(prevMat, position);
-        controlModule->setFeatureReference(position);
-    }
+    double x = (double) frameSize.width() * event->x() / imageLabel->size().width();
+    double y = (double) frameSize.height() * event->y() / imageLabel->size().height();
+    controller->processClick(Point(x, y) + frameOffset);
 }
 
 } // namespace CMS

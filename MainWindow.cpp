@@ -21,6 +21,9 @@
 #include "MainWindow.h"
 #include "ui_mainWindow.h"
 #include "VideoManagerSurface.h"
+#include "CameraMouseController.h"
+#include "TemplateTrackingModule.h"
+#include "MouseControlModule.h"
 
 Q_DECLARE_METATYPE(QCameraInfo)
 
@@ -46,7 +49,10 @@ MainWindow::~MainWindow()
 void MainWindow::setupCameraWidgets()
 {
     // Create video manager
-    videoManagerSurface = new VideoManagerSurface(ui->frameLabel, this);
+    ITrackingModule *trackingModule = new TemplateTrackingModule(0.08); // TODO magic constants are not nice :(
+    MouseControlModule *controlModule = new MouseControlModule;
+    CameraMouseController *controller = new CameraMouseController(trackingModule, controlModule);
+    videoManagerSurface = new VideoManagerSurface(controller, ui->frameLabel, this);
 
     // Create device selection menu
     QActionGroup *cameraGroup = new QActionGroup(this);

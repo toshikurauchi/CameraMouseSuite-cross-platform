@@ -27,6 +27,8 @@
 #include "TrackingModule.h"
 #include "MouseControlModule.h"
 #include "Keyboard.h"
+#include "CameraMouseController.h"
+#include "Point.h"
 
 namespace CMS {
 
@@ -37,7 +39,7 @@ class VideoManagerSurface : public QAbstractVideoSurface
     Q_OBJECT
 
 public:
-    VideoManagerSurface(QLabel *imageLabel, QObject *parent = 0);
+    VideoManagerSurface(CameraMouseController *controller, QLabel *imageLabel, QObject *parent = 0);
     ~VideoManagerSurface();
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
     bool present(const QVideoFrame &frame);
@@ -46,15 +48,11 @@ protected slots:
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    QLabel *m_imageLabel;
+    CameraMouseController *controller;
+    QLabel *imageLabel;
     QList<QVideoFrame::PixelFormat> supportedFormats;
     QSize frameSize;
-    ITrackingModule *trackingModule;
-    MouseControlModule *controlModule;
-    cv::Mat prevMat;
-    bool controlling;
-    bool restarted;
-    IKeyboard *keyboard;
+    Point frameOffset;
 };
 
 } // namespace CMS
