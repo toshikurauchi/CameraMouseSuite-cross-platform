@@ -160,9 +160,12 @@ void MacMouse::click()
     CFRelease(event);
 
     // Click
+    // Mouse Down
     CGEventRef mouseDown = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseDown, cursor, kCGMouseButtonLeft);
-    CGEventRef mouseUp = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseDown, cursor, kCGMouseButtonLeft);
     CGEventPost(kCGHIDEventTap, mouseDown);
+    // Mouse Up
+    CGEventRef mouseUp = CGEventCreateMouseEvent(NULL, kCGEventLeftMouseUp, cursor, kCGMouseButtonLeft);
+    CGEventSetIntegerValueField(mouseUp, kCGMouseEventClickState, 1);
     CGEventPost(kCGHIDEventTap, mouseUp);
 }
 

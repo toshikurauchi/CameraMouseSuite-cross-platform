@@ -18,16 +18,19 @@
 #ifndef MOUSECONTROLMODULE_H
 #define MOUSECONTROLMODULE_H
 
+#include <QTime>
+
 #include "Point.h"
 #include "Mouse.h"
 #include "Keyboard.h"
+#include "Settings.h"
 
 namespace CMS {
 
 class MouseControlModule
 {
 public:
-    MouseControlModule();
+    MouseControlModule(Settings &settings);
     ~MouseControlModule();
     void setFeatureReference(Point featureReference);
     bool isInitialized();
@@ -35,14 +38,20 @@ public:
     void restart();
 
 private:
+    Settings &settings;
+    IMouse *mouse;
+    IKeyboard *keyboard;
     bool initialized;
     Point screenReference;
     Point featureReference;
     Point gain;
-    IMouse *mouse;
-    IKeyboard *keyboard;
     bool resetReference;
     bool controlling;
+    QTime time;
+    Point dwellReference;
+    bool prevLoopClicked;
+
+    bool withinRadius(Point center, Point point, double radius);
 };
 
 } // namespace CMS

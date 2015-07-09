@@ -16,12 +16,15 @@
  */
 
 #include "Settings.h"
+#include "Monitor.h"
 
 namespace CMS {
 
 Settings::Settings(QObject *parent) :
     QObject(parent),
-    enableClicking(false)
+    enableClicking(false),
+    radiusRel(0.05),
+    screenResolution(MonitorFactory::newMonitor()->getResolution())
 {
 }
 
@@ -35,6 +38,11 @@ double Settings::getDwellTime()
     return dwellTime;
 }
 
+int Settings::getDwellTimeMillis()
+{
+    return (int) (dwellTime * 1000);
+}
+
 void Settings::setEnableClicking(bool enableClicking)
 {
     this->enableClicking = enableClicking;
@@ -43,6 +51,16 @@ void Settings::setEnableClicking(bool enableClicking)
 void Settings::setDwellTime(double dwellTime)
 {
     this->dwellTime = dwellTime;
+}
+
+Point Settings::getScreenResolution()
+{
+    return screenResolution;
+}
+
+double Settings::getDwellRadius()
+{
+    return radiusRel * screenResolution.X();
 }
 
 } // namespace CMS

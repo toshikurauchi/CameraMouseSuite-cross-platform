@@ -50,7 +50,7 @@ void MainWindow::setupCameraWidgets()
 {
     // Create video manager
     ITrackingModule *trackingModule = new TemplateTrackingModule(0.08); // TODO magic constants are not nice :(
-    MouseControlModule *controlModule = new MouseControlModule;
+    MouseControlModule *controlModule = new MouseControlModule(settings);
     CameraMouseController *controller = new CameraMouseController(trackingModule, controlModule);
     videoManagerSurface = new VideoManagerSurface(controller, ui->frameLabel, this);
 

@@ -22,14 +22,16 @@
 
 namespace CMS {
 
-MouseControlModule::MouseControlModule() :
-    initialized(false),
-    screenReference(MonitorFactory::newMonitor()->getResolution()/2),
-    gain(6, 6), // TODO Get value from GUI
+MouseControlModule::MouseControlModule(Settings &settings) :
+    settings(settings),
     mouse(MouseFactory::newMouse()),
     keyboard(KeyboardFactory::newKeyboard()),
+    initialized(false),
+    screenReference(settings.getScreenResolution()/2),
+    gain(6, 6), // TODO Get value from GUI
     resetReference(true),
-    controlling(false)
+    controlling(false),
+    prevLoopClicked(false)
 {
 }
 
@@ -72,15 +74,56 @@ void MouseControlModule::update(Point featurePosition)
     }
 
     if (!initialized || !controlling)
+    {
+        time.start();
         return;
+    }
 
+    // Move mouse
     Point displacement = (featurePosition - featureReference).elMult(gain);
-    mouse->move(screenReference + displacement);
+    Point pointerPos = screenReference + displacement;
+    mouse->move(pointerPos);
+
+    // Check if should click
+    // TODO Should it be in another thread?
+    if (settings.isClickingEnabled())
+    {
+        int elapsedTime = time.elapsed();
+        int dwellTime = settings.getDwellTimeMillis(); // We get it every time because it may change
+
+        if (!withinRadius(dwellReference, pointerPos, settings.getDwellRadius()))
+        {
+            dwellReference = pointerPos;
+            time.restart();
+            prevLoopClicked = false;
+        }
+
+        if (elapsedTime >= dwellTime && !prevLoopClicked)
+        {
+            mouse->click();
+            // TODO play sound
+            prevLoopClicked = true;
+        }
+        else if (elapsedTime >= dwellTime + 1000 && prevLoopClicked)
+        {
+            time.restart();
+            prevLoopClicked = false;
+        }
+    }
+    else
+    {
+        time.start();
+    }
 }
 
 void MouseControlModule::restart()
 {
     resetReference = true;
+}
+
+bool MouseControlModule::withinRadius(Point center, Point point, double radius)
+{
+    return (point - center) * (point - center) <= radius * radius;
 }
 
 } // namespace CMS

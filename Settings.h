@@ -20,6 +20,8 @@
 
 #include <QObject>
 
+#include "Point.h"
+
 namespace CMS {
 
 class Settings : public QObject
@@ -30,16 +32,21 @@ public:
 
     bool isClickingEnabled();
     double getDwellTime();
+    int getDwellTimeMillis();
 
 signals:
 
 public slots:
     void setEnableClicking(bool enableClicking);
     void setDwellTime(double dwellTime);
+    Point getScreenResolution();
+    double getDwellRadius();
 
 private:
     bool enableClicking;
     double dwellTime;
+    double radiusRel;
+    Point screenResolution;
 };
 
 } // namespace CMS

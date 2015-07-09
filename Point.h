@@ -22,6 +22,7 @@
 
 namespace CMS {
 
+// TODO Maybe we should call it Vector? Should we have another class Size (just as Point, but with accessors width() and height())?
 class Point
 {
 public:
