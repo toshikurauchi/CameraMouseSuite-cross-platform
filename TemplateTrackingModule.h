@@ -45,10 +45,12 @@ private:
     cv::Mat result;
     cv::Mat fullResult;
     float scaleFactor;
+    Point prevLoc;
 
     int adjustPosition(int pos, int limit);
     cv::Point adjustPoint(cv::Point point, cv::Size limits);
     cv::Mat workingFrame(cv::Mat &frame);
+    cv::Point match(cv::Mat &frame, cv::Mat &tmpl, cv::Size limits, cv::Point searchCenter, cv::Size searchSize);
 };
 
 } // namespace CMS
