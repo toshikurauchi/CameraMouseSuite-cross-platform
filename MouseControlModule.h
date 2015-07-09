@@ -44,7 +44,6 @@ private:
     bool initialized;
     Point screenReference;
     Point featureReference;
-    Point gain;
     bool resetReference;
     bool controlling;
     QTime time;

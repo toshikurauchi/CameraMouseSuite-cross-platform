@@ -44,18 +44,16 @@ Point TemplateTrackingModule::track(cv::Mat &frame)
     // Match template (only look in a region around the previous position)
     cv::Size searchSize(smallFrame.size().width / 3, smallFrame.size().height / 3);
     cv::Point matchLoc = match(smallFrame, templ, imageSize - templateSize, (prevLoc * scaleFactor).asCVIntPoint(), searchSize);
-
     // Update template for scaled image
     cv::Rect roi(matchLoc.x, matchLoc.y, templateSize.width, templateSize.height);
     templ = smallFrame(roi);
 
-    // Update template for full image
+    // Match template for full image (only look a few pixels around the matched region
     cv::Point searchCenter((int) (matchLoc.x / scaleFactor + fullTemplateSize.width / 2),
                            (int) (matchLoc.y / scaleFactor + fullTemplateSize.height / 2));
-    searchSize = cv::Size(fullTemplateSize.width + (int) 4 / scaleFactor,
-                          fullTemplateSize.height + (int) 4 / scaleFactor);
+    searchSize = cv::Size(fullTemplateSize.width + (int) 10 / scaleFactor,
+                          fullTemplateSize.height + (int) 10 / scaleFactor);
     matchLoc = match(frame, fullTempl, fullImageSize - fullTemplateSize, searchCenter, searchSize);
-
     // Update template for full image
     cv::Rect fullRoi(matchLoc.x, matchLoc.y, fullTemplateSize.width, fullTemplateSize.height);
     fullTempl = frame(fullRoi);

@@ -43,6 +43,11 @@ int Settings::getDwellTimeMillis()
     return (int) (dwellTime * 1000);
 }
 
+Point Settings::getGain()
+{
+    return Point(horizontalGain, verticalGain);
+}
+
 void Settings::setEnableClicking(bool enableClicking)
 {
     this->enableClicking = enableClicking;
@@ -61,6 +66,16 @@ Point Settings::getScreenResolution()
 double Settings::getDwellRadius()
 {
     return radiusRel * screenResolution.X();
+}
+
+void Settings::setHorizontalGain(int horizontalGain)
+{
+    this->horizontalGain = horizontalGain;
+}
+
+void Settings::setVerticalGain(int verticalGain)
+{
+    this->verticalGain = verticalGain;
 }
 
 } // namespace CMS

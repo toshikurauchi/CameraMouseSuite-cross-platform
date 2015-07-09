@@ -28,7 +28,6 @@ MouseControlModule::MouseControlModule(Settings &settings) :
     keyboard(KeyboardFactory::newKeyboard()),
     initialized(false),
     screenReference(settings.getScreenResolution()/2),
-    gain(6, 6), // TODO Get value from GUI
     resetReference(true),
     controlling(false),
     prevLoopClicked(false)
@@ -80,7 +79,7 @@ void MouseControlModule::update(Point featurePosition)
     }
 
     // Move mouse
-    Point displacement = (featurePosition - featureReference).elMult(gain);
+    Point displacement = (featurePosition - featureReference).elMult(settings.getGain());
     Point pointerPos = screenReference + displacement;
     mouse->move(pointerPos);
 

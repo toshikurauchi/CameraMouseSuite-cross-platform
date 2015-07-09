@@ -68,3 +68,6 @@ FORMS    += mainWindow.ui
 
 OTHER_FILES += \
     README.md
+
+RESOURCES += \
+    icons.qrc

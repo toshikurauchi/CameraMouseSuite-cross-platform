@@ -86,6 +86,15 @@ void MainWindow::setupSettingsWidgets()
     connect(ui->dwellSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateDwellSlider(double)));
     connect(ui->dwellSlider, SIGNAL(valueChanged(int)), this, SLOT(updateDwellSpinBox(int)));
     ui->dwellSpinBox->setValue(1.0);
+
+    connect(ui->horizontalGainSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setHorizontalGain(int)));
+    connect(ui->horizontalGainSlider, SIGNAL(valueChanged(int)), this, SLOT(horizontalGainChanged(int)));
+    connect(ui->verticalGainSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setVerticalGain(int)));
+    connect(ui->verticalGainSlider, SIGNAL(valueChanged(int)), this, SLOT(verticalGainChanged(int)));
+    connect(ui->lockGainButton, SIGNAL(toggled(bool)), this, SLOT(lockGainClicked(bool)));
+    ui->lockGainButton->setChecked(true);
+    settings.setHorizontalGain(ui->horizontalGainSlider->value());
+    settings.setVerticalGain(ui->verticalGainSlider->value());
 }
 
 void MainWindow::updateSelectedCamera(QAction *action)
@@ -124,6 +133,24 @@ void MainWindow::updateDwellSlider(double dwellSecs)
 {
     int dwellMillis = (int) (dwellSecs * 1000);
     ui->dwellSlider->setValue(dwellMillis);
+}
+
+void MainWindow::horizontalGainChanged(int horizontalGain)
+{
+    if (ui->lockGainButton->isChecked())
+        ui->verticalGainSlider->setValue(horizontalGain);
+}
+
+void MainWindow::verticalGainChanged(int verticalGain)
+{
+    if (ui->lockGainButton->isChecked())
+        ui->horizontalGainSlider->setValue(verticalGain);
+}
+
+void MainWindow::lockGainClicked(bool lock)
+{
+    if (lock)
+        ui->verticalGainSlider->setValue(ui->horizontalGainSlider->value());
 }
 
 } // namespace CMS

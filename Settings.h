@@ -33,6 +33,7 @@ public:
     bool isClickingEnabled();
     double getDwellTime();
     int getDwellTimeMillis();
+    Point getGain();
 
 signals:
 
@@ -41,12 +42,16 @@ public slots:
     void setDwellTime(double dwellTime);
     Point getScreenResolution();
     double getDwellRadius();
+    void setHorizontalGain(int horizontalGain);
+    void setVerticalGain(int verticalGain);
 
 private:
     bool enableClicking;
     double dwellTime;
     double radiusRel;
     Point screenResolution;
+    int horizontalGain;
+    int verticalGain;
 };
 
 } // namespace CMS
