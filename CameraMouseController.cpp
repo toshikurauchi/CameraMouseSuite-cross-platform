@@ -15,6 +15,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QObject>
+#ifdef Q_OS_LINUX
+#include <opencv2/imgproc.hpp>
+#endif
+
 #include "CameraMouseController.h"
 
 namespace CMS {

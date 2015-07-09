@@ -95,7 +95,6 @@ public:
         char buf[17];
         KeySym ks;
         XComposeStatus comp;
-        int len;
         int revert;
 
         XGetInputFocus(d, &curFocus, &revert);
@@ -121,7 +120,7 @@ public:
                     break;
 
                 case KeyPress:
-                    len = XLookupString(&ev.xkey, buf, 16, &ks, &comp);
+                    XLookupString(&ev.xkey, buf, 16, &ks, &comp);
                     switch (ks)
                     {
                     case XK_Control_L:
