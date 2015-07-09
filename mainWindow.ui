@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>833</width>
-    <height>469</height>
+    <height>488</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,39 +104,14 @@
           <string>Gain</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
-          <item row="5" column="0" colspan="2">
-           <widget class="QSlider" name="horizontalGainSlider">
-            <property name="minimum">
-             <number>3</number>
-            </property>
-            <property name="maximum">
-             <number>18</number>
-            </property>
-            <property name="singleStep">
-             <number>3</number>
-            </property>
-            <property name="value">
-             <number>6</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksAbove</enum>
-            </property>
-            <property name="tickInterval">
-             <number>3</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Low</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
+          <item row="5" column="0" colspan="2">
            <widget class="QSlider" name="verticalGainSlider">
             <property name="minimum">
              <number>3</number>
@@ -168,27 +143,37 @@
            </widget>
           </item>
           <item row="3" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Vertical Gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>High</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Horizontal Gain</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Vertial Gain</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_6">
             <property name="text">
              <string>Low</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="1" column="1">
            <widget class="QLabel" name="label_7">
             <property name="text">
              <string>High</string>
@@ -198,13 +183,28 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>High</string>
+          <item row="2" column="0" colspan="2">
+           <widget class="QSlider" name="horizontalGainSlider">
+            <property name="minimum">
+             <number>3</number>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <property name="maximum">
+             <number>18</number>
+            </property>
+            <property name="singleStep">
+             <number>3</number>
+            </property>
+            <property name="value">
+             <number>6</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+            <property name="tickInterval">
+             <number>3</number>
             </property>
            </widget>
           </item>
@@ -276,7 +276,7 @@
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>18</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDevices">
