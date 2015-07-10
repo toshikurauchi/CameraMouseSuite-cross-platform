@@ -32,6 +32,8 @@ public:
     bool empty();
     double X();
     double Y();
+    void setX(double x);
+    void setY(double y);
     cv::Point2f asCVPoint();
     cv::Point asCVIntPoint();
     Point operator+(Point other);

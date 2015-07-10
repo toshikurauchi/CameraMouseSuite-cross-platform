@@ -74,6 +74,7 @@ void MainWindow::setupCameraWidgets()
 
 void MainWindow::setupSettingsWidgets()
 {
+    // Clicking
     connect(ui->enableClickingCheckBox, SIGNAL(toggled(bool)), ui->dwellSlider, SLOT(setEnabled(bool)));
     connect(ui->enableClickingCheckBox, SIGNAL(toggled(bool)), ui->dwellSpinBox, SLOT(setEnabled(bool)));
     connect(ui->enableClickingCheckBox, SIGNAL(toggled(bool)), &settings, SLOT(setEnableClicking(bool)));
@@ -82,11 +83,15 @@ void MainWindow::setupSettingsWidgets()
     ui->dwellSlider->setEnabled(clickingEnabled);
     ui->dwellSpinBox->setEnabled(clickingEnabled);
 
+    // Dwell time
     connect(ui->dwellSpinBox, SIGNAL(valueChanged(double)), &settings, SLOT(setDwellTime(double)));
     connect(ui->dwellSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateDwellSlider(double)));
     connect(ui->dwellSlider, SIGNAL(valueChanged(int)), this, SLOT(updateDwellSpinBox(int)));
     ui->dwellSpinBox->setValue(1.0);
 
+    // Mouse Movement
+    connect(ui->reverseHorizontalCheckBox, SIGNAL(toggled(bool)), &settings, SLOT(setReverseHorizontal(bool)));
+    ui->reverseHorizontalCheckBox->setChecked(settings.getReverseHorizontal());
     connect(ui->horizontalGainSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setHorizontalGain(int)));
     connect(ui->horizontalGainSlider, SIGNAL(valueChanged(int)), this, SLOT(horizontalGainChanged(int)));
     connect(ui->verticalGainSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setVerticalGain(int)));

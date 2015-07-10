@@ -80,6 +80,10 @@ void MouseControlModule::update(Point featurePosition)
 
     // Move mouse
     Point displacement = (featurePosition - featureReference).elMult(settings.getGain());
+    if (settings.getReverseHorizontal())
+    {
+        displacement.setX(-displacement.X());
+    }
     Point pointerPos = screenReference + displacement;
     mouse->move(pointerPos);
 

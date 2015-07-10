@@ -34,6 +34,7 @@ public:
     double getDwellTime();
     int getDwellTimeMillis();
     Point getGain();
+    bool getReverseHorizontal();
 
 signals:
 
@@ -44,6 +45,7 @@ public slots:
     double getDwellRadius();
     void setHorizontalGain(int horizontalGain);
     void setVerticalGain(int verticalGain);
+    void setReverseHorizontal(bool reverseHorizontal);
 
 private:
     bool enableClicking;
@@ -52,6 +54,7 @@ private:
     Point screenResolution;
     int horizontalGain;
     int verticalGain;
+    bool reverseHorizontal;
 };
 
 } // namespace CMS

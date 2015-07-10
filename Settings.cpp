@@ -24,7 +24,8 @@ Settings::Settings(QObject *parent) :
     QObject(parent),
     enableClicking(false),
     radiusRel(0.05),
-    screenResolution(MonitorFactory::newMonitor()->getResolution())
+    screenResolution(MonitorFactory::newMonitor()->getResolution()),
+    reverseHorizontal(false)
 {
 }
 
@@ -46,6 +47,11 @@ int Settings::getDwellTimeMillis()
 Point Settings::getGain()
 {
     return Point(horizontalGain, verticalGain);
+}
+
+bool Settings::getReverseHorizontal()
+{
+    return reverseHorizontal;
 }
 
 void Settings::setEnableClicking(bool enableClicking)
@@ -76,6 +82,11 @@ void Settings::setHorizontalGain(int horizontalGain)
 void Settings::setVerticalGain(int verticalGain)
 {
     this->verticalGain = verticalGain;
+}
+
+void Settings::setReverseHorizontal(bool reverseHorizontal)
+{
+    this->reverseHorizontal = reverseHorizontal;
 }
 
 } // namespace CMS

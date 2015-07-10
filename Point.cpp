@@ -46,6 +46,16 @@ double Point::Y()
     return y;
 }
 
+void Point::setX(double x)
+{
+    this->x = x;
+}
+
+void Point::setY(double y)
+{
+    this->y = y;
+}
+
 cv::Point2f Point::asCVPoint()
 {
     return cv::Point2f((float)x, (float)y);
