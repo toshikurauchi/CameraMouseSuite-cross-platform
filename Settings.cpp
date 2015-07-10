@@ -54,6 +54,14 @@ bool Settings::getReverseHorizontal()
     return reverseHorizontal;
 }
 
+double Settings::getDamping()
+{
+    double dp = 100;
+    if (enableSmoothing)
+        dp = damping;
+    return dp;
+}
+
 void Settings::setEnableClicking(bool enableClicking)
 {
     this->enableClicking = enableClicking;
@@ -87,6 +95,16 @@ void Settings::setVerticalGain(int verticalGain)
 void Settings::setReverseHorizontal(bool reverseHorizontal)
 {
     this->reverseHorizontal = reverseHorizontal;
+}
+
+void Settings::setEnableSmoothing(bool enableSmoothing)
+{
+    this->enableSmoothing = enableSmoothing;
+}
+
+void Settings::setDampingPercent(int damping)
+{
+    this->damping = damping / 100.0;
 }
 
 } // namespace CMS

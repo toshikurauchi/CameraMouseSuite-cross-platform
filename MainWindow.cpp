@@ -92,6 +92,8 @@ void MainWindow::setupSettingsWidgets()
     // Mouse Movement
     connect(ui->reverseHorizontalCheckBox, SIGNAL(toggled(bool)), &settings, SLOT(setReverseHorizontal(bool)));
     ui->reverseHorizontalCheckBox->setChecked(settings.getReverseHorizontal());
+
+    // Gain
     connect(ui->horizontalGainSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setHorizontalGain(int)));
     connect(ui->horizontalGainSlider, SIGNAL(valueChanged(int)), this, SLOT(horizontalGainChanged(int)));
     connect(ui->verticalGainSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setVerticalGain(int)));
@@ -100,6 +102,13 @@ void MainWindow::setupSettingsWidgets()
     ui->lockGainButton->setChecked(true);
     settings.setHorizontalGain(ui->horizontalGainSlider->value());
     settings.setVerticalGain(ui->verticalGainSlider->value());
+
+    // Smoothing
+    connect(ui->smoothingCheckBox, SIGNAL(toggled(bool)), ui->smoothingSlider, SLOT(setEnabled(bool)));
+    connect(ui->smoothingCheckBox, SIGNAL(toggled(bool)), &settings, SLOT(setEnableSmoothing(bool)));
+    connect(ui->smoothingSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setDampingPercent(int)));
+    settings.setDampingPercent(ui->smoothingSlider->value());
+    ui->smoothingCheckBox->setChecked(true);
 }
 
 void MainWindow::updateSelectedCamera(QAction *action)

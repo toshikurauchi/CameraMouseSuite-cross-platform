@@ -49,6 +49,7 @@ private:
     QTime time;
     Point dwellReference;
     bool prevLoopClicked;
+    Point prevPointer;
 
     bool withinRadius(Point center, Point point, double radius);
 };

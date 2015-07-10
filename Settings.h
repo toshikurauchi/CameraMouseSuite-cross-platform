@@ -35,6 +35,7 @@ public:
     int getDwellTimeMillis();
     Point getGain();
     bool getReverseHorizontal();
+    double getDamping();
 
 signals:
 
@@ -46,6 +47,8 @@ public slots:
     void setHorizontalGain(int horizontalGain);
     void setVerticalGain(int verticalGain);
     void setReverseHorizontal(bool reverseHorizontal);
+    void setEnableSmoothing(bool enableSmoothing);
+    void setDampingPercent(int damping);
 
 private:
     bool enableClicking;
@@ -55,6 +58,8 @@ private:
     int horizontalGain;
     int verticalGain;
     bool reverseHorizontal;
+    bool enableSmoothing;
+    double damping;
 };
 
 } // namespace CMS

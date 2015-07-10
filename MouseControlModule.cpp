@@ -85,6 +85,12 @@ void MouseControlModule::update(Point featurePosition)
         displacement.setX(-displacement.X());
     }
     Point pointerPos = screenReference + displacement;
+    double damping = settings.getDamping();
+    if (!prevPointer.empty())
+    {
+        pointerPos = pointerPos * damping + prevPointer * (1 - damping);
+    }
+    prevPointer = pointerPos;
     mouse->move(pointerPos);
 
     // Check if should click
@@ -92,7 +98,7 @@ void MouseControlModule::update(Point featurePosition)
     if (settings.isClickingEnabled())
     {
         int elapsedTime = time.elapsed();
-        int dwellTime = settings.getDwellTimeMillis(); // We get it every time because it may change
+        int dwellTime = settings.getDwellTimeMillis();
 
         if (!withinRadius(dwellReference, pointerPos, settings.getDwellRadius()))
         {
