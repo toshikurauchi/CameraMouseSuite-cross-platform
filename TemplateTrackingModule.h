@@ -27,7 +27,8 @@ class TemplateTrackingModule : public ITrackingModule
 public:
     TemplateTrackingModule(double templateSizeRatio);
     Point track(cv::Mat &frame);
-    void setTrackPoint(cv::Mat frame, Point point);
+    void setTrackPoint(cv::Mat &frame, Point point);
+    void drawOnFrame(cv::Mat &frame, Point point);
     cv::Size getImageSize();
     bool isInitialized();
 

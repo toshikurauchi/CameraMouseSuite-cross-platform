@@ -44,7 +44,7 @@ void CameraMouseController::processFrame(cv::Mat &frame)
         Point featurePosition = trackingModule->track(frame);
         if (!featurePosition.empty())
         {
-            cv::circle(frame, featurePosition.asCVPoint(), 10, cv::Scalar(255, 255, 0));
+            trackingModule->drawOnFrame(frame, featurePosition);
             controlModule->update(featurePosition);
         }
     }

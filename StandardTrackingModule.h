@@ -31,7 +31,7 @@ class StandardTrackingModule : public ITrackingModule
 public:
     StandardTrackingModule();
     Point track(cv::Mat &frame);
-    void setTrackPoint(cv::Mat frame, Point point);
+    void setTrackPoint(cv::Mat &frame, Point point);
     cv::Size getImageSize();
     bool isInitialized();
 

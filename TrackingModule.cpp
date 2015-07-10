@@ -18,11 +18,21 @@
 #include <stdexcept>
 
 #include "TrackingModule.h"
+#include "ImageProcessing.h"
 
 namespace CMS {
 
 ITrackingModule::~ITrackingModule()
 {}
+
+void ITrackingModule::drawOnFrame(cv::Mat &frame, Point point)
+{
+    float ratio = 0.03;
+    int width = (int) (frame.size().width * ratio);
+    int height = (int) (frame.size().height * ratio);
+    cv::Rect rectangle(point.X() - width / 2, point.Y() - height / 2, width, height);
+    ImageProcessing::drawGreenRectangle(frame, rectangle);
+}
 
 TrackingModuleSanityCheck::TrackingModuleSanityCheck(ITrackingModule *trackingModule) :
     trackingModule(trackingModule)

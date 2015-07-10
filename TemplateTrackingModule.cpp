@@ -21,6 +21,7 @@
 #endif
 
 #include "TemplateTrackingModule.h"
+#include "ImageProcessing.h"
 
 namespace CMS {
 
@@ -63,7 +64,7 @@ Point TemplateTrackingModule::track(cv::Mat &frame)
     return prevLoc;
 }
 
-void TemplateTrackingModule::setTrackPoint(cv::Mat frame, Point point)
+void TemplateTrackingModule::setTrackPoint(cv::Mat &frame, Point point)
 {
     sanityCheck.checkFrameNotEmpty(frame);
 
@@ -92,6 +93,18 @@ void TemplateTrackingModule::setTrackPoint(cv::Mat frame, Point point)
 
     prevLoc = point;
     initialized = true;
+}
+
+void TemplateTrackingModule::drawOnFrame(cv::Mat &frame, Point point)
+{
+#ifdef DEBUGING
+    int width = fullTemplateSize.width;
+    int height = fullTemplateSize.height;
+    cv::Rect rectangle(point.X() - width / 2, point.Y() - height / 2, width, height);
+    ImageProcessing::drawGreenRectangle(frame, rectangle);
+#else
+    ITrackingModule::drawOnFrame(frame, point);
+#endif
 }
 
 cv::Size TemplateTrackingModule::getImageSize()

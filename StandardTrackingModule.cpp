@@ -63,7 +63,7 @@ Point StandardTrackingModule::track(cv::Mat &frame)
     return imagePoint;
 }
 
-void StandardTrackingModule::setTrackPoint(cv::Mat frame, Point point)
+void StandardTrackingModule::setTrackPoint(cv::Mat &frame, Point point)
 {
     sanityCheck.checkFrameNotEmpty(frame);
 

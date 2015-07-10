@@ -15,40 +15,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_TRACKINGMODULE_H
-#define CMS_TRACKINGMODULE_H
+#ifndef CMS_IMAGEPROCESSING_H
+#define CMS_IMAGEPROCESSING_H
 
 #include <cv.h>
 
-#include "Point.h"
-
 namespace CMS {
 
-class ITrackingModule
+class ImageProcessing
 {
 public:
-    virtual ~ITrackingModule();
-    virtual Point track(cv::Mat &frame) = 0;
-    virtual void setTrackPoint(cv::Mat &frame, Point point) = 0;
-    virtual void drawOnFrame(cv::Mat &frame, Point point);
-    virtual cv::Size getImageSize() = 0;
-    virtual bool isInitialized() = 0;
-};
-
-class TrackingModuleSanityCheck
-{
-public:
-    TrackingModuleSanityCheck(ITrackingModule *trackingModule);
-    void checkInitialized();
-    void checkFrameNotEmpty(cv::Mat &frame);
-    void checkFrameSize(cv::Mat &frame);
-    void limitTPDelta(cv::Point2f &cur, cv::Point2f &last);
-
-private:
-    ITrackingModule *trackingModule;
+    static void drawGreenRectangle(cv::Mat &image, cv::Rect &rectangle);
 };
 
 } // namespace CMS
 
-#endif // CMS_TRACKINGMODULE_H
-
+#endif // CMS_IMAGEPROCESSING_H

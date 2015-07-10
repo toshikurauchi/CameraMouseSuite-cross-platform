@@ -96,6 +96,7 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
         if (frameSize.isEmpty())
         {
             frameSize = image.size();
+            scaledFrameSize = scaledImage.size();
             frameOffset = Point(imageLabel->size().width() - scaledImage.width(), imageLabel->size().height() - scaledImage.height())/2;
         }
 
@@ -115,9 +116,11 @@ void VideoManagerSurface::mousePressEvent(QMouseEvent *event)
 {
     if (frameSize.isEmpty())
         return;
-    double x = (double) frameSize.width() * event->x() / imageLabel->size().width();
-    double y = (double) frameSize.height() * event->y() / imageLabel->size().height();
-    controller->processClick(Point(x, y) + frameOffset);
+    double offX = frameOffset.X();
+    double offY = frameOffset.Y();
+    double x = (double) frameSize.width() * (event->x() - offX) / scaledFrameSize.width();
+    double y = (double) frameSize.height() * (event->y() - offY) / scaledFrameSize.height();
+    controller->processClick(Point(x, y));
 }
 
 } // namespace CMS

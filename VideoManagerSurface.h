@@ -52,6 +52,7 @@ private:
     QLabel *imageLabel;
     QList<QVideoFrame::PixelFormat> supportedFormats;
     QSize frameSize;
+    QSize scaledFrameSize;
     Point frameOffset;
 };
 
