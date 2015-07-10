@@ -62,6 +62,18 @@ double Settings::getDamping()
     return dp;
 }
 
+double Settings::getResetFeatureDistThreshSq()
+{
+    if (frameSize.empty()) return 0;
+    Point threshReg = frameSize * 0.02;
+    return threshReg * threshReg;
+}
+
+Point Settings::getFrameSize()
+{
+    return frameSize;
+}
+
 void Settings::setEnableClicking(bool enableClicking)
 {
     this->enableClicking = enableClicking;
@@ -105,6 +117,11 @@ void Settings::setEnableSmoothing(bool enableSmoothing)
 void Settings::setDampingPercent(int damping)
 {
     this->damping = damping / 100.0;
+}
+
+void Settings::setFrameSize(Point frameSize)
+{
+    this->frameSize = frameSize;
 }
 
 } // namespace CMS

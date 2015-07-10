@@ -36,6 +36,8 @@ public:
     Point getGain();
     bool getReverseHorizontal();
     double getDamping();
+    double getResetFeatureDistThreshSq();
+    Point getFrameSize();
 
 signals:
 
@@ -49,6 +51,7 @@ public slots:
     void setReverseHorizontal(bool reverseHorizontal);
     void setEnableSmoothing(bool enableSmoothing);
     void setDampingPercent(int damping);
+    void setFrameSize(Point frameSize);
 
 private:
     bool enableClicking;
@@ -60,6 +63,7 @@ private:
     bool reverseHorizontal;
     bool enableSmoothing;
     double damping;
+    Point frameSize;
 };
 
 } // namespace CMS

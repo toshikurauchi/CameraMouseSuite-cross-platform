@@ -24,8 +24,8 @@
 
 namespace CMS {
 
-CameraMouseController::CameraMouseController(ITrackingModule *trackingModule, MouseControlModule *controlModule) :
-    trackingModule(trackingModule), controlModule(controlModule)
+CameraMouseController::CameraMouseController(Settings &settings, ITrackingModule *trackingModule, MouseControlModule *controlModule) :
+    settings(settings), trackingModule(trackingModule), controlModule(controlModule)
 {
 }
 
@@ -44,15 +44,33 @@ void CameraMouseController::processFrame(cv::Mat &frame)
         Point featurePosition = trackingModule->track(frame);
         if (!featurePosition.empty())
         {
+            if (featureCheckTimer.elapsed() > 1000)
+            {
+                Point autoFeaturePosition = initializationModule.initializeFeature(frame);
+                if (!autoFeaturePosition.empty())
+                {
+                    double distThreshSq = settings.getResetFeatureDistThreshSq();
+                    Point disp = autoFeaturePosition - featurePosition;
+                    if (disp * disp > distThreshSq)
+                    {
+                        trackingModule->setTrackPoint(frame, autoFeaturePosition);
+                        featurePosition = autoFeaturePosition;
+                    }
+                    featureCheckTimer.restart();
+                }
+            }
             trackingModule->drawOnFrame(frame, featurePosition);
             controlModule->update(featurePosition);
         }
     }
     else
     {
-        Point featurePosition = initializationModule.initializeFeature(frame);
-        if (!featurePosition.empty())
-            trackingModule->setTrackPoint(frame, featurePosition);
+        Point initialFeaturePosition = initializationModule.initializeFeature(frame);
+        if (!initialFeaturePosition.empty())
+        {
+            trackingModule->setTrackPoint(frame, initialFeaturePosition);
+            featureCheckTimer.start();
+        }
     }
 }
 

@@ -19,27 +19,31 @@
 #define CMS_CAMERAMOUSECONTROLLER_H
 
 #include <cv.h>
+#include <QTime>
 
 #include "FeatureInitializationModule.h"
 #include "TrackingModule.h"
 #include "MouseControlModule.h"
 #include "Point.h"
+#include "Settings.h"
 
 namespace CMS {
 
 class CameraMouseController
 {
 public:
-    CameraMouseController(ITrackingModule *trackingModule, MouseControlModule *controlModule);
+    CameraMouseController(Settings &settings, ITrackingModule *trackingModule, MouseControlModule *controlModule);
     ~CameraMouseController();
     void processFrame(cv::Mat &frame);
     void processClick(Point position);
 
 private:
+    Settings &settings;
     FeatureInitializationModule initializationModule;
     ITrackingModule *trackingModule;
     MouseControlModule *controlModule;
     cv::Mat prevFrame;
+    QTime featureCheckTimer;
 };
 
 } // namespace CMS

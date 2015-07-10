@@ -29,6 +29,7 @@
 #include "Keyboard.h"
 #include "CameraMouseController.h"
 #include "Point.h"
+#include "Settings.h"
 
 namespace CMS {
 
@@ -39,7 +40,7 @@ class VideoManagerSurface : public QAbstractVideoSurface
     Q_OBJECT
 
 public:
-    VideoManagerSurface(CameraMouseController *controller, QLabel *imageLabel, QObject *parent = 0);
+    VideoManagerSurface(Settings &settings, CameraMouseController *controller, QLabel *imageLabel, QObject *parent = 0);
     ~VideoManagerSurface();
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
     bool present(const QVideoFrame &frame);
@@ -48,6 +49,7 @@ protected slots:
     void mousePressEvent(QMouseEvent *event);
 
 private:
+    Settings &settings;
     CameraMouseController *controller;
     QLabel *imageLabel;
     QList<QVideoFrame::PixelFormat> supportedFormats;

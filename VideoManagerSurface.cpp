@@ -26,8 +26,9 @@
 
 namespace CMS {
 
-VideoManagerSurface::VideoManagerSurface(CameraMouseController *controller, QLabel *imageLabel, QObject *parent) :
+VideoManagerSurface::VideoManagerSurface(Settings &settings, CameraMouseController *controller, QLabel *imageLabel, QObject *parent) :
     QAbstractVideoSurface(parent),
+    settings(settings),
     controller(controller)
 {
     this->imageLabel = imageLabel;
@@ -95,6 +96,7 @@ bool VideoManagerSurface::present(const QVideoFrame &frame)
 
         if (frameSize.isEmpty())
         {
+            settings.setFrameSize(Point(image.size()));
             frameSize = image.size();
             scaledFrameSize = scaledImage.size();
             frameOffset = Point(imageLabel->size().width() - scaledImage.width(), imageLabel->size().height() - scaledImage.height())/2;
