@@ -67,7 +67,23 @@ HEADERS  += *.h
 FORMS    += mainWindow.ui
 
 OTHER_FILES += \
-    README.md
+    README.md \
+    cascades/*.xml
 
 RESOURCES += \
     icons.qrc
+
+# Copy haar cascade files
+SRC = $${PWD}/cascades
+DEST = $${OUT_PWD}/cascades
+
+win32 {
+SRC ~= s,/,\\,g
+DEST ~= s,/,\\,g
+}
+
+copydata.commands = $(COPY_DIR) $$SRC $$DEST
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+QMAKE_EXTRA_TARGETS += first copydata

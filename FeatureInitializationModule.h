@@ -15,33 +15,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_CAMERAMOUSECONTROLLER_H
-#define CMS_CAMERAMOUSECONTROLLER_H
+#ifndef CMS_FEATUREINITIALIZATIONMODULE_H
+#define CMS_FEATUREINITIALIZATIONMODULE_H
 
 #include <cv.h>
 
-#include "FeatureInitializationModule.h"
-#include "TrackingModule.h"
-#include "MouseControlModule.h"
 #include "Point.h"
 
 namespace CMS {
 
-class CameraMouseController
+class FeatureInitializationModule
 {
 public:
-    CameraMouseController(ITrackingModule *trackingModule, MouseControlModule *controlModule);
-    ~CameraMouseController();
-    void processFrame(cv::Mat &frame);
-    void processClick(Point position);
-
+    FeatureInitializationModule();
+    Point initializeFeature(cv::Mat &frame);
 private:
-    FeatureInitializationModule initializationModule;
-    ITrackingModule *trackingModule;
-    MouseControlModule *controlModule;
-    cv::Mat prevFrame;
+    cv::CascadeClassifier faceCascade;
+    cv::CascadeClassifier leftEyeCascade;
+    cv::CascadeClassifier rightEyeCascade;
+    cv::CascadeClassifier noseCascade;
+    cv::CascadeClassifier mouthCascade;
+    bool filesLoaded;
+
+    cv::Rect detectNose(cv::Mat &face);
 };
 
 } // namespace CMS
 
-#endif // CMS_CAMERAMOUSECONTROLLER_H
+#endif // CMS_FEATUREINITIALIZATIONMODULE_H

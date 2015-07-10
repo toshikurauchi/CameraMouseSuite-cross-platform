@@ -48,6 +48,12 @@ void CameraMouseController::processFrame(cv::Mat &frame)
             controlModule->update(featurePosition);
         }
     }
+    else
+    {
+        Point featurePosition = initializationModule.initializeFeature(frame);
+        if (!featurePosition.empty())
+            trackingModule->setTrackPoint(frame, featurePosition);
+    }
 }
 
 void CameraMouseController::processClick(Point position)
