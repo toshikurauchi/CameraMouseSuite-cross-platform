@@ -83,7 +83,7 @@ void MainWindow::setupSettingsWidgets()
     ui->dwellSlider->setEnabled(clickingEnabled);
     ui->dwellSpinBox->setEnabled(clickingEnabled);
 
-    // Dwell time
+    // Dwell Time
     connect(ui->dwellSpinBox, SIGNAL(valueChanged(double)), &settings, SLOT(setDwellTime(double)));
     connect(ui->dwellSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateDwellSlider(double)));
     connect(ui->dwellSlider, SIGNAL(valueChanged(int)), this, SLOT(updateDwellSpinBox(int)));
@@ -109,6 +109,10 @@ void MainWindow::setupSettingsWidgets()
     connect(ui->smoothingSlider, SIGNAL(valueChanged(int)), &settings, SLOT(setDampingPercent(int)));
     settings.setDampingPercent(ui->smoothingSlider->value());
     ui->smoothingCheckBox->setChecked(true);
+
+    // Auto Detect Nose
+    connect(ui->autoDetectNoseCheckBox, SIGNAL(toggled(bool)), &settings, SLOT(setAutoDetectNose(bool)));
+    ui->autoDetectNoseCheckBox->setChecked(settings.isAutoDetectNoseEnabled());
 }
 
 void MainWindow::updateSelectedCamera(QAction *action)

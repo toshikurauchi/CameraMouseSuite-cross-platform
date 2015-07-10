@@ -38,6 +38,7 @@ public:
     double getDamping();
     double getResetFeatureDistThreshSq();
     Point getFrameSize();
+    bool isAutoDetectNoseEnabled();
 
 signals:
 
@@ -52,6 +53,7 @@ public slots:
     void setEnableSmoothing(bool enableSmoothing);
     void setDampingPercent(int damping);
     void setFrameSize(Point frameSize);
+    void setAutoDetectNose(bool autoDetectNose);
 
 private:
     bool enableClicking;
@@ -64,6 +66,7 @@ private:
     bool enableSmoothing;
     double damping;
     Point frameSize;
+    bool autoDetectNose;
 };
 
 } // namespace CMS

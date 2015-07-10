@@ -27,6 +27,7 @@ namespace CMS {
 CameraMouseController::CameraMouseController(Settings &settings, ITrackingModule *trackingModule, MouseControlModule *controlModule) :
     settings(settings), trackingModule(trackingModule), controlModule(controlModule)
 {
+    featureCheckTimer.start();
 }
 
 CameraMouseController::~CameraMouseController()
@@ -44,7 +45,7 @@ void CameraMouseController::processFrame(cv::Mat &frame)
         Point featurePosition = trackingModule->track(frame);
         if (!featurePosition.empty())
         {
-            if (featureCheckTimer.elapsed() > 1000)
+            if (settings.isAutoDetectNoseEnabled() && featureCheckTimer.elapsed() > 1000)
             {
                 Point autoFeaturePosition = initializationModule.initializeFeature(frame);
                 if (!autoFeaturePosition.empty())
@@ -63,13 +64,12 @@ void CameraMouseController::processFrame(cv::Mat &frame)
             controlModule->update(featurePosition);
         }
     }
-    else
+    else if (settings.isAutoDetectNoseEnabled())
     {
         Point initialFeaturePosition = initializationModule.initializeFeature(frame);
         if (!initialFeaturePosition.empty())
         {
             trackingModule->setTrackPoint(frame, initialFeaturePosition);
-            featureCheckTimer.start();
         }
     }
 }

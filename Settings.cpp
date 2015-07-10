@@ -25,7 +25,8 @@ Settings::Settings(QObject *parent) :
     enableClicking(false),
     radiusRel(0.05),
     screenResolution(MonitorFactory::newMonitor()->getResolution()),
-    reverseHorizontal(false)
+    reverseHorizontal(false),
+    autoDetectNose(true)
 {
 }
 
@@ -72,6 +73,11 @@ double Settings::getResetFeatureDistThreshSq()
 Point Settings::getFrameSize()
 {
     return frameSize;
+}
+
+bool Settings::isAutoDetectNoseEnabled()
+{
+    return autoDetectNose;
 }
 
 void Settings::setEnableClicking(bool enableClicking)
@@ -122,6 +128,11 @@ void Settings::setDampingPercent(int damping)
 void Settings::setFrameSize(Point frameSize)
 {
     this->frameSize = frameSize;
+}
+
+void Settings::setAutoDetectNose(bool autoDetectNose)
+{
+    this->autoDetectNose = autoDetectNose;
 }
 
 } // namespace CMS
