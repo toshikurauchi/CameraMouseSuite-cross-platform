@@ -17,6 +17,9 @@
 
 #include <vector>
 #include <algorithm>
+#include <QCoreApplication>
+#include <QDir>
+#include <QDebug>
 
 #include "FeatureInitializationModule.h"
 
@@ -25,6 +28,10 @@ namespace CMS {
 FeatureInitializationModule::FeatureInitializationModule()
 {
     filesLoaded = true;
+
+    QString dir = QDir::currentPath();
+    qDebug() << QCoreApplication::applicationDirPath();
+    qDebug() << dir;
     if (!faceCascade.load("cascades/haarcascade_frontalface_alt.xml"))
         filesLoaded = false;
     if (!leftEyeCascade.load("cascades/haarcascade_mcs_lefteye.xml"))

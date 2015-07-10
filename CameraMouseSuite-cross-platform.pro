@@ -82,6 +82,10 @@ SRC ~= s,/,\\,g
 DEST ~= s,/,\\,g
 }
 
+mac {
+DEST = $${OUT_PWD}/CameraMouseSuite.app/Contents/MacOS
+}
+
 copydata.commands = $(COPY_DIR) $$SRC $$DEST
 first.depends = $(first) copydata
 export(first.depends)

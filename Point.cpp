@@ -31,7 +31,7 @@ Point::Point(cv::Point2f &cvPoint) : isEmpty(false), x(cvPoint.x), y(cvPoint.y)
 {
 }
 
-Point::Point(QSize &qSize) : isEmpty(false), x(qSize.width()), y(qSize.height())
+Point::Point(QSize qSize) : isEmpty(false), x(qSize.width()), y(qSize.height())
 {
 }
 

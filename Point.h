@@ -30,7 +30,7 @@ public:
     Point();
     Point(double x, double y);
     Point(cv::Point2f &cvPoint);
-    Point(QSize &qSize);
+    Point(QSize qSize);
     bool empty();
     double X();
     double Y();
