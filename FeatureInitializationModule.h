@@ -19,6 +19,7 @@
 #define CMS_FEATUREINITIALIZATIONMODULE_H
 
 #include <cv.h>
+#include <vector>
 
 #include "Point.h"
 
@@ -38,6 +39,11 @@ private:
     bool filesLoaded;
 
     cv::Rect detectNose(cv::Mat &face);
+    void applyGeometricConstraints(std::vector<cv::Rect> &leftEyes,
+                                   std::vector<cv::Rect> &rightEyes,
+                                   std::vector<cv::Rect> &noses,
+                                   std::vector<cv::Rect> &mouths);
+    Point centerOfRect(cv::Rect rect);
 };
 
 } // namespace CMS

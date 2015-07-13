@@ -15,10 +15,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <vector>
 #include <algorithm>
 #include <QCoreApplication>
 #include <QDir>
+#include <set>
 #include <QDebug>
 
 #include "FeatureInitializationModule.h"
@@ -118,6 +118,8 @@ cv::Rect FeatureInitializationModule::detectNose(cv::Mat &face)
     noseCascade.detectMultiScale(face, noses, 1.2, 2, 0, minFaceFeature);
     mouthCascade.detectMultiScale(face, mouths, 1.2, 2, 0, minFaceFeature);
 
+    applyGeometricConstraints(leftEyes, rightEyes, noses, mouths);
+
     cv::Rect nose(0, 0, 0, 0);
     if (leftEyes.size() && rightEyes.size() && noses.size() && mouths.size()) // Found all features!
     {
@@ -125,6 +127,82 @@ cv::Rect FeatureInitializationModule::detectNose(cv::Mat &face)
     }
 
     return nose;
+}
+
+struct CompareRect
+{
+    bool operator() (const cv::Rect &r1, const cv::Rect &r2) {
+        if (r1.x == r2.x)
+        {
+            if (r1.y == r2.y)
+            {
+                if (r1.width == r2.width)
+                {
+                    if (r1.height == r2.height)
+                        return false;
+                    return r1.height < r2.height;
+                }
+                return r1.width < r2.width;
+            }
+            return r1.y < r2.y;
+        }
+        return r1.x < r2.x;
+    }
+};
+
+void FeatureInitializationModule::applyGeometricConstraints(std::vector<cv::Rect> &leftEyes,
+                                                            std::vector<cv::Rect> &rightEyes,
+                                                            std::vector<cv::Rect> &noses,
+                                                            std::vector<cv::Rect> &mouths)
+{
+    std::set<cv::Rect, CompareRect> filteredLeftEyes;
+    std::set<cv::Rect, CompareRect> filteredRightEyes;
+    std::set<cv::Rect, CompareRect> filteredNoses;
+    std::set<cv::Rect, CompareRect> filteredMouths;
+
+    for (std::vector<cv::Rect>::iterator lEyeIt = leftEyes.begin(); lEyeIt != leftEyes.end(); lEyeIt++)
+    {
+        Point rightEye = centerOfRect(*lEyeIt);
+        for (std::vector<cv::Rect>::iterator rEyeIt = rightEyes.begin(); rEyeIt != rightEyes.end(); rEyeIt++)
+        {
+            Point leftEye = centerOfRect(*rEyeIt);
+            if (leftEye.X() < rightEye.X())
+            {
+                for (std::vector<cv::Rect>::iterator noseIt = noses.begin(); noseIt != noses.end(); noseIt++)
+                {
+                    Point nose = centerOfRect(*noseIt);
+                    if (nose.X() > leftEye.X() && nose.X() < rightEye.X() && nose.Y() > leftEye.Y() && nose.Y() > rightEye.Y())
+                    {
+                        for (std::vector<cv::Rect>::iterator mouthIt = mouths.begin(); mouthIt != mouths.end(); mouthIt++)
+                        {
+                            Point mouth = centerOfRect(*mouthIt);
+                            if (mouth.X() > leftEye.X() && mouth.X() < rightEye.X() && mouth.Y() > nose.Y())
+                            {
+                                filteredLeftEyes.insert(*lEyeIt);
+                                filteredRightEyes.insert(*rEyeIt);
+                                filteredNoses.insert(*noseIt);
+                                filteredMouths.insert(*mouthIt);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    leftEyes.clear();
+    leftEyes.insert(leftEyes.begin(), filteredLeftEyes.begin(), filteredLeftEyes.end());
+    rightEyes.clear();
+    rightEyes.insert(rightEyes.begin(), filteredRightEyes.begin(), filteredRightEyes.end());
+    noses.clear();
+    noses.insert(noses.begin(), filteredNoses.begin(), filteredNoses.end());
+    mouths.clear();
+    mouths.insert(mouths.begin(), filteredMouths.begin(), filteredMouths.end());
+}
+
+// TODO Move this to somewhere that makes more sense (and I think it could be used in other places as well)
+Point FeatureInitializationModule::centerOfRect(cv::Rect rect)
+{
+    return Point(rect.x + rect.width / 2, rect.y + rect.height);
 }
 
 } // namespace CMS
