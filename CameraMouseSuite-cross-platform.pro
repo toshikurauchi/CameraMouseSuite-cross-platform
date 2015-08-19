@@ -82,6 +82,9 @@ SRC = $${PWD}/cascades
 DEST = $${OUT_PWD}/cascades
 
 win32 {
+CONFIG(debug, debug|release) DEST = $${OUT_PWD}/debug/cascades
+CONFIG(release, debug|release) DEST = $${OUT_PWD}/release/cascades
+
 SRC ~= s,/,\\,g
 DEST ~= s,/,\\,g
 }
