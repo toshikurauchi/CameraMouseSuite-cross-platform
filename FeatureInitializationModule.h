@@ -18,6 +18,11 @@
 #ifndef CMS_FEATUREINITIALIZATIONMODULE_H
 #define CMS_FEATUREINITIALIZATIONMODULE_H
 
+#include <QObject>
+#ifdef Q_OS_LINUX
+#include <opencv2/opencv.hpp>
+#endif
+
 #include <cv.h>
 #include <vector>
 
