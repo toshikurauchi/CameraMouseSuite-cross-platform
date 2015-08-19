@@ -55,7 +55,11 @@ win32 {
         message(Debug configuration!)
     }
     CONFIG(release, debug|release) {
-        LIBS += $$(OPENCV_DIR)/lib/*[0-9].lib
+        LIBS += -L$$(OPENCV_DIR)/lib/ \
+                -lopencv_core2411 \
+                -lopencv_imgproc2411 \
+                -lopencv_objdetect2411 \
+                -lopencv_video2411
         message(Release configuration!)
     }
 }
