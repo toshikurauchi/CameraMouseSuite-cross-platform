@@ -33,6 +33,8 @@ public:
     MouseControlModule(Settings &settings);
     ~MouseControlModule();
     void setFeatureReference(Point featureReference);
+    void setScreenReference(Point screenReference);
+    Point getPrevPos();
     bool isInitialized();
     void update(Point featurePosition);
     void restart();

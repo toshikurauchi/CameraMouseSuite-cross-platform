@@ -55,6 +55,8 @@ void CameraMouseController::processFrame(cv::Mat &frame)
                     if (disp * disp > distThreshSq)
                     {
                         trackingModule->setTrackPoint(frame, autoFeaturePosition);
+                        controlModule->setScreenReference(controlModule->getPrevPos());
+                        controlModule->restart();
                         featurePosition = autoFeaturePosition;
                     }
                     featureCheckTimer.restart();
@@ -70,6 +72,8 @@ void CameraMouseController::processFrame(cv::Mat &frame)
         if (!initialFeaturePosition.empty())
         {
             trackingModule->setTrackPoint(frame, initialFeaturePosition);
+            controlModule->setScreenReference(settings.getScreenResolution()/2);
+            controlModule->restart();
         }
     }
 }
