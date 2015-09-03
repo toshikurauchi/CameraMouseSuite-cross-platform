@@ -29,18 +29,16 @@ FeatureInitializationModule::FeatureInitializationModule()
 {
     filesLoaded = true;
 
-    QString dir = QDir::currentPath();
-    qDebug() << QCoreApplication::applicationDirPath();
-    qDebug() << dir;
-    if (!faceCascade.load("cascades/haarcascade_frontalface_alt.xml"))
+    QDir dir;
+    if (!faceCascade.load(dir.absoluteFilePath("cascades/haarcascade_frontalface_alt.xml").toStdString()))
         filesLoaded = false;
-    if (!leftEyeCascade.load("cascades/haarcascade_mcs_lefteye.xml"))
+    if (!leftEyeCascade.load(dir.absoluteFilePath("cascades/haarcascade_mcs_lefteye.xml").toStdString()))
         filesLoaded = false;
-    if (!rightEyeCascade.load("cascades/haarcascade_mcs_righteye.xml"))
+    if (!rightEyeCascade.load(dir.absoluteFilePath("cascades/haarcascade_mcs_righteye.xml").toStdString()))
         filesLoaded = false;
-    if (!noseCascade.load("cascades/haarcascade_mcs_nose.xml"))
+    if (!noseCascade.load(dir.absoluteFilePath("cascades/haarcascade_mcs_nose.xml").toStdString()))
         filesLoaded = false;
-    if (!mouthCascade.load("cascades/haarcascade_mcs_mouth.xml"))
+    if (!mouthCascade.load(dir.absoluteFilePath("cascades/haarcascade_mcs_mouth.xml").toStdString()))
         filesLoaded = false;
 }
 
