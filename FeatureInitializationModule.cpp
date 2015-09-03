@@ -44,6 +44,11 @@ FeatureInitializationModule::FeatureInitializationModule()
         filesLoaded = false;
 }
 
+bool FeatureInitializationModule::allFilesLoaded()
+{
+    return filesLoaded;
+}
+
 // **** Rectangle comparators ****
 // Use an unnamed namespace to restrict global variables scope
 namespace {

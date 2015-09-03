@@ -70,6 +70,7 @@ void MainWindow::setupCameraWidgets()
     connect(cameraGroup, SIGNAL(triggered(QAction*)), SLOT(updateSelectedCamera(QAction*)));
 
     setCamera(QCameraInfo::defaultCamera());
+    if (!controller->isAutoDetectWorking()) ui->autoDetectNoseCheckBox->setVisible(false);
 }
 
 void MainWindow::setupSettingsWidgets()

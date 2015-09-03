@@ -34,6 +34,7 @@ class FeatureInitializationModule
 {
 public:
     FeatureInitializationModule();
+    bool allFilesLoaded();
     Point initializeFeature(cv::Mat &frame);
 private:
     cv::CascadeClassifier faceCascade;

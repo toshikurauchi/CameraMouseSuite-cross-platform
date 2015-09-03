@@ -83,5 +83,10 @@ void CameraMouseController::processClick(Point position)
     }
 }
 
+bool CameraMouseController::isAutoDetectWorking()
+{
+    return initializationModule.allFilesLoaded();
+}
+
 } // namespace CMS
 
