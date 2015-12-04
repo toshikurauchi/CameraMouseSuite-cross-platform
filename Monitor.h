@@ -54,7 +54,7 @@ public:
 
 #elif defined Q_OS_MAC
 
-class MacMonitor : public IMonitor
+class OSXMonitor : public IMonitor
 {
 public:
     Point getResolution();

@@ -64,7 +64,7 @@ IKeyboard* KeyboardFactory::newKeyboard()
 #elif defined Q_OS_WIN
     return new WindowsKeyboard;
 #elif defined Q_OS_MAC
-    return new MacKeyboard;
+    return new OSXKeyboard;
 #else
     std::runtime_error("Operating System not supported. Cannot control mouse.");
     return 0;

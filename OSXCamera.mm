@@ -15,59 +15,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_MOUSE_H
-#define CMS_MOUSE_H
+#include "Camera.h"
 
-#include <QObject> // Included to have the OS defines
+#ifdef Q_OS_MAC
 
-#include "Point.h"
+#import <AVFoundation/AVFoundation.h>
 
 namespace CMS {
 
-class IMouse
+std::vector<Camera*> OSXCamera::getCameraList()
 {
-public:
-    virtual ~IMouse();
-    void move(Point p);
-    virtual void move(double x, double y) = 0;
-    virtual void click() = 0;
-};
-
-class MouseFactory
-{
-public:
-    static IMouse* newMouse();
-};
-
-#ifdef Q_OS_LINUX
-
-class LinuxMouse : public IMouse
-{
-public:
-    void move(double x, double y);
-    void click();
-};
-
-#elif defined Q_OS_WIN
-
-class WindowsMouse : public IMouse
-{
-public:
-    void move(double x, double y);
-    void click();
-};
-
-#elif defined Q_OS_MAC
-
-class OSXMouse : public IMouse
-{
-public:
-    void move(double x, double y);
-    void click();
-};
-
-#endif
+    int idx = 0;
+    std::vector<Camera*> cameras;
+    // list available devices
+    NSArray *devices = [AVCaptureDevice devices];
+    for (AVCaptureDevice *device in devices) {
+        if ([device hasMediaType:AVMediaTypeVideo]) {
+            cameras.push_back(new Camera([[device localizedName] UTF8String], idx));
+            idx++;
+        }
+    }
+    return cameras;
+}
 
 } // namespace CMS
 
-#endif // CMS_MOUSE_H
+#endif

@@ -42,9 +42,10 @@ unix {
 mac {
     LIBS += -framework ApplicationServices \
             -framework AppKit \
-            -framework Foundation
+            -framework Foundation \
+            -framework AVFoundation
 
-    OBJECTIVE_SOURCES += MacKeyboard.mm
+    OBJECTIVE_SOURCES +=
 }
 
 win32 {
@@ -55,7 +56,11 @@ win32 {
         message(Debug configuration!)
     }
     CONFIG(release, debug|release) {
-        LIBS += $$(OPENCV_DIR)/lib/*[0-9].lib
+        LIBS += -L$$(OPENCV_DIR)/lib/ \
+                -lopencv_core2411 \
+                -lopencv_imgproc2411 \
+                -lopencv_objdetect2411 \
+                -lopencv_video2411
         message(Release configuration!)
     }
 }
@@ -78,6 +83,9 @@ SRC = $${PWD}/cascades
 DEST = $${OUT_PWD}/cascades
 
 win32 {
+CONFIG(debug, debug|release) DEST = $${OUT_PWD}/debug/cascades
+CONFIG(release, debug|release) DEST = $${OUT_PWD}/release/cascades
+
 SRC ~= s,/,\\,g
 DEST ~= s,/,\\,g
 }
@@ -91,3 +99,7 @@ first.depends = $(first) copydata
 export(first.depends)
 export(copydata.commands)
 QMAKE_EXTRA_TARGETS += first copydata
+
+OBJECTIVE_SOURCES += \
+    OSXKeyboard.mm \
+    OSXCamera.mm

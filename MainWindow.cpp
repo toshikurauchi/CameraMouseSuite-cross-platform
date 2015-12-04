@@ -15,24 +15,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QCameraInfo>
 #include <QMessageBox>
 
 #include "MainWindow.h"
 #include "ui_mainWindow.h"
-#include "VideoManagerSurface.h"
 #include "CameraMouseController.h"
 #include "TemplateTrackingModule.h"
 #include "MouseControlModule.h"
+#include "Camera.h"
 
-Q_DECLARE_METATYPE(QCameraInfo)
+Q_DECLARE_METATYPE(CMS::Camera*)
 
 namespace CMS {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    camera(0),
     settings(this)
 {
     ui->setupUi(this);
@@ -52,24 +50,25 @@ void MainWindow::setupCameraWidgets()
     ITrackingModule *trackingModule = new TemplateTrackingModule(0.08); // TODO magic constants are not nice :(
     MouseControlModule *controlModule = new MouseControlModule(settings);
     CameraMouseController *controller = new CameraMouseController(settings, trackingModule, controlModule);
-    videoManagerSurface = new VideoManagerSurface(settings, controller, ui->frameLabel, this);
+    videoManager = new VideoManager(settings, controller, ui->frameLabel, this);
 
     // Create device selection menu
     QActionGroup *cameraGroup = new QActionGroup(this);
     cameraGroup->setExclusive(true);
-    foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
-        QAction *cameraAction = new QAction(cameraInfo.description(), cameraGroup);
+    foreach (Camera *camera, Camera::listCameras()) {
+        QAction *cameraAction = new QAction(QString::fromStdString(camera->getName()), cameraGroup);
         cameraAction->setCheckable(true);
-        cameraAction->setData(QVariant::fromValue(cameraInfo));
-        if (cameraInfo == QCameraInfo::defaultCamera())
-            cameraAction->setChecked(true);
+        cameraAction->setData(QVariant::fromValue(camera));
+        if (camera->getId() == 0) cameraAction->setChecked(true);
 
         ui->menuDevices->addAction(cameraAction);
     }
 
     connect(cameraGroup, SIGNAL(triggered(QAction*)), SLOT(updateSelectedCamera(QAction*)));
 
-    setCamera(QCameraInfo::defaultCamera());
+    Camera *camera = new Camera();
+    setCamera(camera);
+    delete(camera);
     if (!controller->isAutoDetectWorking()) ui->autoDetectNoseCheckBox->setVisible(false);
 }
 
@@ -118,28 +117,12 @@ void MainWindow::setupSettingsWidgets()
 
 void MainWindow::updateSelectedCamera(QAction *action)
 {
-    setCamera(qvariant_cast<QCameraInfo>(action->data()));
+    setCamera(qvariant_cast<Camera*>(action->data()));
 }
 
-void MainWindow::displayCameraError()
+void MainWindow::setCamera(Camera *camera)
 {
-    QMessageBox::warning(this, tr("Camera error"), camera->errorString());
-}
-
-void MainWindow::setCamera(const QCameraInfo &cameraInfo)
-{
-    if (camera)
-        delete camera;
-
-    camera = new QCamera(cameraInfo);
-
-    connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()));
-    camera->setViewfinder(videoManagerSurface);
-
-    camera->start();
-
-    camera->setCaptureMode(QCamera::CaptureViewfinder);
-    camera->searchAndLock();
+    videoManager->setCamera(camera);
 }
 
 void MainWindow::updateDwellSpinBox(int dwellMillis)

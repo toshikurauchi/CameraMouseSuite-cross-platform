@@ -19,10 +19,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QCamera>
-#include <QAbstractVideoSurface>
 
 #include "Settings.h"
+#include "Camera.h"
+#include "VideoManager.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,8 +40,7 @@ public:
 
 private slots:
     void updateSelectedCamera(QAction *action);
-    void displayCameraError();
-    void setCamera(const QCameraInfo &cameraInfo);
+    void setCamera(Camera *camera);
     void updateDwellSpinBox(int dwellMillis);
     void updateDwellSlider(double dwellSecs);
     void horizontalGainChanged(int horizontalGain);
@@ -50,8 +49,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QCamera *camera;
-    QAbstractVideoSurface *videoManagerSurface;
+    VideoManager *videoManager;
     Settings settings;
 
     void setupCameraWidgets();

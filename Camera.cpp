@@ -15,59 +15,39 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_MOUSE_H
-#define CMS_MOUSE_H
+#include <QDebug>
 
-#include <QObject> // Included to have the OS defines
-
-#include "Point.h"
+#include "Camera.h"
 
 namespace CMS {
 
-class IMouse
-{
-public:
-    virtual ~IMouse();
-    void move(Point p);
-    virtual void move(double x, double y) = 0;
-    virtual void click() = 0;
-};
+Camera::Camera(QObject *parent) :
+    QObject(parent), name(""), id(0)
+{}
 
-class MouseFactory
-{
-public:
-    static IMouse* newMouse();
-};
+Camera::Camera(std::string name, int id, QObject *parent) :
+    QObject(parent), name(name), id(id)
+{}
 
+std::string Camera::getName()
+{
+    return name;
+}
+
+int Camera::getId() {
+    return id;
+}
+
+std::vector<Camera*> Camera::listCameras()
+{
 #ifdef Q_OS_LINUX
-
-class LinuxMouse : public IMouse
-{
-public:
-    void move(double x, double y);
-    void click();
-};
-
+    return LinuxCamera::getCameraList();
 #elif defined Q_OS_WIN
-
-class WindowsMouse : public IMouse
-{
-public:
-    void move(double x, double y);
-    void click();
-};
-
+    return WindowsCamera::getCameraList();
 #elif defined Q_OS_MAC
-
-class OSXMouse : public IMouse
-{
-public:
-    void move(double x, double y);
-    void click();
-};
-
+    return OSXCamera::getCameraList();
 #endif
+}
 
 } // namespace CMS
 
-#endif // CMS_MOUSE_H

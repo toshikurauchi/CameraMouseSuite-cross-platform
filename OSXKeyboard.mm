@@ -25,7 +25,7 @@
 
 namespace CMS {
 
-MacKeyboard::MacKeyboard()
+OSXKeyboard::OSXKeyboard()
 {
     // register for keys outside of the application
     [NSEvent addGlobalMonitorForEventsMatchingMask:NSFlagsChangedMask handler:^(NSEvent *theEvent)
@@ -54,11 +54,11 @@ MacKeyboard::MacKeyboard()
     }];
 }
 
-MacKeyboard::~MacKeyboard()
+OSXKeyboard::~OSXKeyboard()
 {
 }
 
-KeyEvent MacKeyboard::nextEvent()
+KeyEvent OSXKeyboard::nextEvent()
 {
     if (!hasNextEvent())
     {
@@ -72,7 +72,7 @@ KeyEvent MacKeyboard::nextEvent()
     return event;
 }
 
-bool MacKeyboard::hasNextEvent()
+bool OSXKeyboard::hasNextEvent()
 {
     return !events.empty();
 }

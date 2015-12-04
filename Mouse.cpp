@@ -47,7 +47,7 @@ IMouse* MouseFactory::newMouse()
 #elif defined Q_OS_WIN
     return new WindowsMouse;
 #elif defined Q_OS_MAC
-    return new MacMouse;
+    return new OSXMouse;
 #else
     std::runtime_error("Operating System not supported. Cannot control mouse.");
     return 0;
@@ -146,13 +146,13 @@ void WindowsMouse::click()
 
 #elif defined Q_OS_MAC
 
-void MacMouse::move(double x, double y)
+void OSXMouse::move(double x, double y)
 {
     CGEventRef move = CGEventCreateMouseEvent(NULL, NX_MOUSEMOVED, CGPointMake(x, y), kCGMouseButtonLeft);
     CGEventPost(kCGHIDEventTap, move);
 }
 
-void MacMouse::click()
+void OSXMouse::click()
 {
     // Get cursor position
     CGEventRef event = CGEventCreate(NULL);

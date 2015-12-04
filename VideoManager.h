@@ -15,14 +15,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CMS_VIDEOMANAGERSURFACE_H
-#define CMS_VIDEOMANAGERSURFACE_H
+#ifndef CMS_VIDEOMANAGER_H
+#define CMS_VIDEOMANAGER_H
 
+#include <QObject>
 #include <QList>
 #include <QLabel>
-#include <QVideoFrame>
-#include <QAbstractVideoSurface>
+#include <QTimer>
 #include <opencv/cv.h>
+#include <highgui.h>
 
 #include "TrackingModule.h"
 #include "MouseControlModule.h"
@@ -30,29 +31,31 @@
 #include "CameraMouseController.h"
 #include "Point.h"
 #include "Settings.h"
+#include "Camera.h"
 
 namespace CMS {
 
 // TODO I think this class has too many resposibilities
 
-class VideoManagerSurface : public QAbstractVideoSurface
+class VideoManager : public QObject
 {
     Q_OBJECT
 
 public:
-    VideoManagerSurface(Settings &settings, CameraMouseController *controller, QLabel *imageLabel, QObject *parent = 0);
-    ~VideoManagerSurface();
-    QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
-    bool present(const QVideoFrame &frame);
+    VideoManager(Settings &settings, CameraMouseController *controller, QLabel *imageLabel, QObject *parent = 0);
+    ~VideoManager();
+    void setCamera(Camera *camera);
 
 protected slots:
+    void present();
     void mousePressEvent(QMouseEvent *event);
 
 private:
+    cv::VideoCapture *capture;
+    QTimer *timer;
     Settings &settings;
     CameraMouseController *controller;
     QLabel *imageLabel;
-    QList<QVideoFrame::PixelFormat> supportedFormats;
     QSize frameSize;
     QSize scaledFrameSize;
     Point frameOffset;
@@ -60,4 +63,4 @@ private:
 
 } // namespace CMS
 
-#endif // CMS_VIDEOMANAGERSURFACE_H
+#endif // CMS_VIDEOMANAGER_H

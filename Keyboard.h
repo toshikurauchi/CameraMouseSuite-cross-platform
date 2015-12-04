@@ -94,11 +94,11 @@ public:
 
 #elif defined Q_OS_MAC
 
-class MacKeyboard : public IKeyboard
+class OSXKeyboard : public IKeyboard
 {
 public:
-    MacKeyboard();
-    ~MacKeyboard();
+    OSXKeyboard();
+    ~OSXKeyboard();
     KeyEvent nextEvent();
     bool hasNextEvent();
 private:

@@ -37,7 +37,7 @@ IMonitor* MonitorFactory::newMonitor()
 #elif defined Q_OS_WIN
     return new WindowsMonitor;
 #elif defined Q_OS_MAC
-    return new MacMonitor;
+    return new OSXMonitor;
 #else
     std::runtime_error("Operating System not supported. Cannot get monitor information.");
     return 0;
@@ -66,7 +66,7 @@ Point WindowsMonitor::getResolution()
 
 #elif defined Q_OS_MAC
 
-Point MacMonitor::getResolution()
+Point OSXMonitor::getResolution()
 {
     CGDirectDisplayID display = CGMainDisplayID();
     size_t width = CGDisplayPixelsWide(display);
