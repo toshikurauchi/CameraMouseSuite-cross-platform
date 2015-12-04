@@ -51,7 +51,8 @@ protected slots:
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    cv::VideoCapture *capture;
+    cv::VideoCapture capture;
+    int captureId;
     QTimer *timer;
     Settings &settings;
     CameraMouseController *controller;

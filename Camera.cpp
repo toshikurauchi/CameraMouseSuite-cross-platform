@@ -17,6 +17,10 @@
 
 #include <QDebug>
 
+#ifdef Q_OS_LINUX
+#include <QRegularExpression>
+#endif
+
 #include "Camera.h"
 
 namespace CMS {
@@ -47,6 +51,40 @@ std::vector<Camera*> Camera::listCameras()
 #elif defined Q_OS_MAC
     return OSXCamera::getCameraList();
 #endif
+}
+
+std::vector<Camera*> LinuxCamera::getCameraList()
+{
+    std::vector<Camera*> cameras;
+    QString listString = QString::fromStdString(exec("uvcdynctrl -l"));
+    QRegularExpressionMatchIterator matched = QRegularExpression("video(\\d)\\s+?(.*?)\n").globalMatch(listString);
+    if (!matched.hasNext())
+    {
+        qDebug() << "No camera found. Please verify that you have installed uvcdynctrl and that the camera is properly connected.";
+        return cameras;
+    }
+    while (matched.hasNext())
+    {
+        QRegularExpressionMatch videoInfo = matched.next();
+        int id = videoInfo.captured(1).trimmed().toInt();
+        QString name = videoInfo.captured(2).trimmed();
+        cameras.push_back(new Camera(name.toStdString(), id));
+    }
+    return cameras;
+}
+
+std::string LinuxCamera::exec(std::string cmd) {
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) return "ERROR";
+    const int bufferSize = 1024;
+    char buffer[bufferSize];
+    std::string result = "";
+    while(!feof(pipe)) {
+        if(fgets(buffer, bufferSize, pipe) != NULL)
+                result += buffer;
+    }
+    pclose(pipe);
+    return result;
 }
 
 } // namespace CMS

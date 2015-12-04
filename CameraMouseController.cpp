@@ -17,7 +17,7 @@
 
 #include <QObject>
 #ifdef Q_OS_LINUX
-#include <opencv2/imgproc.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #endif
 
 #include "CameraMouseController.h"

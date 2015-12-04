@@ -28,7 +28,7 @@ namespace CMS {
 
 VideoManager::VideoManager(Settings &settings, CameraMouseController *controller, QLabel *imageLabel, QObject *parent) :
     QObject(parent),
-    capture(0),
+    captureId(-1),
     timer(new QTimer(this)),
     settings(settings),
     controller(controller)
@@ -46,25 +46,21 @@ VideoManager::~VideoManager()
     delete(controller);
 
     delete(timer);
-    if (capture) delete(capture);
 }
 
 void VideoManager::setCamera(Camera *camera)
 {
-    if (capture)
-    {
-        capture->release();
-        delete (capture);
-    }
-    capture = new cv::VideoCapture(camera->getId());
+    if (captureId != camera->getId()) capture.open(camera->getId());
+    captureId = camera->getId();
 }
 
 void VideoManager::present()
 {
-    if (!capture || !capture->isOpened()) return;
+    if (!capture.isOpened()) return;
 
     cv::Mat mat;
-    (*capture) >> mat;
+    capture >> mat;
+    if (mat.empty()) return;
 
     // The kind of mirroring needed depends on the OS
     cv::Mat mirrored;
