@@ -46,6 +46,16 @@ void MouseControlModule::setFeatureReference(Point featureReference)
     initialized = true;
 }
 
+void MouseControlModule::setScreenReference(Point screenReference)
+{
+    this->screenReference = screenReference;
+}
+
+Point MouseControlModule::getPrevPos()
+{
+    return prevPointer;
+}
+
 bool MouseControlModule::isInitialized()
 {
     return initialized;

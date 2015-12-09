@@ -36,6 +36,7 @@ public:
     ~CameraMouseController();
     void processFrame(cv::Mat &frame);
     void processClick(Point position);
+    bool isAutoDetectWorking();
 
 private:
     Settings &settings;
