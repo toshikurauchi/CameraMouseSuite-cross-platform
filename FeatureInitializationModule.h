@@ -19,7 +19,7 @@
 #define CMS_FEATUREINITIALIZATIONMODULE_H
 
 #include <QObject>
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN32)
 #include <opencv2/opencv.hpp>
 #endif
 
