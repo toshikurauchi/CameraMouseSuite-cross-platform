@@ -16,6 +16,7 @@
  */
 
 #include <stdexcept>
+#include <QDebug>
 
 #include "TrackingModule.h"
 #include "ImageProcessing.h"
@@ -39,22 +40,34 @@ TrackingModuleSanityCheck::TrackingModuleSanityCheck(ITrackingModule *trackingMo
 {
 }
 
-void TrackingModuleSanityCheck::checkInitialized()
+bool TrackingModuleSanityCheck::checkInitialized()
 {
     if (!trackingModule->isInitialized())
-        throw std::logic_error("No point set to be tracked");
+    {
+        qDebug() << "No point set to be tracked";
+        return false;
+    }
+    return true;
 }
 
-void TrackingModuleSanityCheck::checkFrameNotEmpty(cv::Mat &frame)
+bool TrackingModuleSanityCheck::checkFrameNotEmpty(cv::Mat &frame)
 {
     if (frame.empty())
-        throw std::invalid_argument("Frame is empty!");
+    {
+        qDebug() << "Frame is empty!";
+        return false;
+    }
+    return true;
 }
 
-void TrackingModuleSanityCheck::checkFrameSize(cv::Mat &frame)
+bool TrackingModuleSanityCheck::checkFrameSize(cv::Mat &frame)
 {
     if (frame.size() != trackingModule->getImageSize())
-        throw std::invalid_argument("Invalid frame sizes");
+    {
+        trackingModule->reset();
+        return false;
+    }
+    return true;
 }
 
 // find magnitude of change between cur and last TrackPoint in

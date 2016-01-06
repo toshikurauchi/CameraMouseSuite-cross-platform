@@ -96,7 +96,6 @@ void MouseControlModule::update(Point featurePosition)
     {
         displacement.setX(-displacement.X());
     }
-    qDebug() << screenReference.X() << screenReference.Y();
     Point pointerPos = screenReference + displacement;
     double damping = settings.getDamping();
     if (!prevPointer.empty())

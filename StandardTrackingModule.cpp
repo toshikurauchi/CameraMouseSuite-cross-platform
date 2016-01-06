@@ -34,9 +34,10 @@ StandardTrackingModule::StandardTrackingModule() :
 
 Point StandardTrackingModule::track(cv::Mat &frame)
 {
-    sanityCheck.checkInitialized();
-    sanityCheck.checkFrameNotEmpty(frame);
-    sanityCheck.checkFrameSize(frame);
+    Point imagePoint;
+
+    if (!sanityCheck.checkFrameNotEmpty(frame) || !sanityCheck.checkFrameSize(frame) || !sanityCheck.checkInitialized())
+        return imagePoint;
 
     cv::Mat grey = ASM::convertToGray(frame);
 
@@ -47,8 +48,6 @@ Point StandardTrackingModule::track(cv::Mat &frame)
     std::vector<cv::Point2f> currentTrackPoints;
     cv::calcOpticalFlowPyrLK(prevGrey, grey, prevTrackPoints, currentTrackPoints,
                              featuresFound, err, winSize, 3, criteria);
-
-    Point imagePoint;
 
     sanityCheck.limitTPDelta(currentTrackPoints[0], prevTrackPoints[0]);
 
@@ -65,7 +64,7 @@ Point StandardTrackingModule::track(cv::Mat &frame)
 
 void StandardTrackingModule::setTrackPoint(cv::Mat &frame, Point point)
 {
-    sanityCheck.checkFrameNotEmpty(frame);
+    if (!sanityCheck.checkFrameNotEmpty(frame)) return;
 
     imageSize = frame.size();
     if (point.X() < 0 || point.X() >= imageSize.width ||
@@ -89,6 +88,11 @@ cv::Size StandardTrackingModule::getImageSize()
 bool StandardTrackingModule::isInitialized()
 {
     return initialized;
+}
+
+void StandardTrackingModule::reset()
+{
+    initialized = false;
 }
 
 } // namespace CMS

@@ -36,9 +36,8 @@ TemplateTrackingModule::TemplateTrackingModule(double templateSizeRatio) :
 
 Point TemplateTrackingModule::track(cv::Mat &frame)
 {
-    sanityCheck.checkInitialized();
-    sanityCheck.checkFrameNotEmpty(frame);
-    sanityCheck.checkFrameSize(frame);
+    if (!sanityCheck.checkFrameNotEmpty(frame) || !sanityCheck.checkFrameSize(frame) || !sanityCheck.checkInitialized())
+        return prevLoc;
 
     cv::Mat smallFrame = workingFrame(frame);
 
@@ -66,7 +65,7 @@ Point TemplateTrackingModule::track(cv::Mat &frame)
 
 void TemplateTrackingModule::setTrackPoint(cv::Mat &frame, Point point)
 {
-    sanityCheck.checkFrameNotEmpty(frame);
+    if (!sanityCheck.checkFrameNotEmpty(frame)) return;
 
     fullImageSize = frame.size();
     fullTemplateSize = (Point(frame.size().width, frame.size().width)*templateSizeRatio).asCVIntPoint();
@@ -115,6 +114,11 @@ cv::Size TemplateTrackingModule::getImageSize()
 bool TemplateTrackingModule::isInitialized()
 {
     return initialized;
+}
+
+void TemplateTrackingModule::reset()
+{
+    initialized = false;
 }
 
 int TemplateTrackingModule::adjustPosition(int pos, int limit)

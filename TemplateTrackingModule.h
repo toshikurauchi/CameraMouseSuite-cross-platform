@@ -31,6 +31,7 @@ public:
     void drawOnFrame(cv::Mat &frame, Point point);
     cv::Size getImageSize();
     bool isInitialized();
+    void reset();
 
 private:
     TrackingModuleSanityCheck sanityCheck;

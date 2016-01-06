@@ -50,7 +50,10 @@ VideoManager::~VideoManager()
 
 void VideoManager::setCamera(Camera *camera)
 {
-    if (captureId != camera->getId()) capture.open(camera->getId());
+    if (captureId != camera->getId())
+    {
+        capture.open(camera->getId());
+    }
     captureId = camera->getId();
 }
 

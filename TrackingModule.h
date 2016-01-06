@@ -33,15 +33,16 @@ public:
     virtual void drawOnFrame(cv::Mat &frame, Point point);
     virtual cv::Size getImageSize() = 0;
     virtual bool isInitialized() = 0;
+    virtual void reset() = 0;
 };
 
 class TrackingModuleSanityCheck
 {
 public:
     TrackingModuleSanityCheck(ITrackingModule *trackingModule);
-    void checkInitialized();
-    void checkFrameNotEmpty(cv::Mat &frame);
-    void checkFrameSize(cv::Mat &frame);
+    bool checkInitialized();
+    bool checkFrameNotEmpty(cv::Mat &frame);
+    bool checkFrameSize(cv::Mat &frame);
     void limitTPDelta(cv::Point2f &cur, cv::Point2f &last);
 
 private:
