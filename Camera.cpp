@@ -57,6 +57,7 @@ std::vector<Camera*> Camera::listCameras()
 #endif
 }
 
+#ifdef Q_OS_LINUX
 std::vector<Camera*> LinuxCamera::getCameraList()
 {
     std::vector<Camera*> cameras;
@@ -80,6 +81,7 @@ std::vector<Camera*> LinuxCamera::getCameraList()
 
     return cameras;
 }
+#endif
 
 } // namespace CMS
 
