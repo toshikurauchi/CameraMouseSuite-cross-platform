@@ -18,7 +18,11 @@
 #include <QDebug>
 
 #ifdef Q_OS_LINUX
-#include <QRegularExpression>
+#include <linux/videodev2.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sstream>
 #endif
 
 #include "Camera.h"
@@ -56,35 +60,25 @@ std::vector<Camera*> Camera::listCameras()
 std::vector<Camera*> LinuxCamera::getCameraList()
 {
     std::vector<Camera*> cameras;
-    QString listString = QString::fromStdString(exec("uvcdynctrl -l"));
-    QRegularExpressionMatchIterator matched = QRegularExpression("video(\\d)\\s+?(.*?)\n").globalMatch(listString);
-    if (!matched.hasNext())
-    {
-        qDebug() << "No camera found. Please verify that you have installed uvcdynctrl and that the camera is properly connected.";
-        return cameras;
-    }
-    while (matched.hasNext())
-    {
-        QRegularExpressionMatch videoInfo = matched.next();
-        int id = videoInfo.captured(1).trimmed().toInt();
-        QString name = videoInfo.captured(2).trimmed();
-        cameras.push_back(new Camera(name.toStdString(), id));
-    }
-    return cameras;
-}
 
-std::string LinuxCamera::exec(std::string cmd) {
-    FILE* pipe = popen(cmd.c_str(), "r");
-    if (!pipe) return "ERROR";
-    const int bufferSize = 1024;
-    char buffer[bufferSize];
-    std::string result = "";
-    while(!feof(pipe)) {
-        if(fgets(buffer, bufferSize, pipe) != NULL)
-                result += buffer;
+    for (int id = 0; true; id++)
+    {
+        std::stringstream stream;
+        stream << "/dev/video";
+        stream << id;
+        int fd = open(stream.str().c_str(), O_RDWR);
+        if (fd == -1) break;
+
+        v4l2_capability capability;
+        ioctl(fd, VIDIOC_QUERYCAP, &capability);
+        cameras.push_back(new Camera(std::string(reinterpret_cast<char*>(capability.card)), id));
+
+        close(fd);
     }
-    pclose(pipe);
-    return result;
+    if (cameras.size() == 0)
+        qDebug() << "No camera found. Please verify that the camera is properly connected.";
+
+    return cameras;
 }
 
 } // namespace CMS

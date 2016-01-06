@@ -45,8 +45,6 @@ class LinuxCamera
 {
 public:
     static std::vector<Camera*> getCameraList();
-private:
-    static std::string exec(std::string cmd);
 };
 
 #elif defined Q_OS_WIN
