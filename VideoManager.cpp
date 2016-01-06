@@ -81,7 +81,7 @@ void VideoManager::present()
     QImage image = ASM::cvMatToQImage(mat);
     QImage scaledImage = image.scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-    if (frameSize.isEmpty())
+    if (frameSize.isEmpty() || frameSize != image.size())
     {
         settings.setFrameSize(Point(image.size()));
         frameSize = image.size();
