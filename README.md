@@ -8,6 +8,8 @@
 1. [Install Qt Creator](https://www1.qt.io/download/) (with Qt 5.X). You can select a free, open source version. When installing it, select at least 1 version that is 5.1 or higher.
 1. Install OpenCV (with Homebrew, for example: `brew install opencv`)
 1. Install pkg-config (with Homebrew: `brew install pkg-config`)
+1. Open QT Creator, then open the `.pro` file, `CameraMouseSuite-cross-platform.pro`.
+1. Run the program by pressing cmd-R, or click on the `Build` menu, then click `Run`.
 
 #### Troubleshooting
 
